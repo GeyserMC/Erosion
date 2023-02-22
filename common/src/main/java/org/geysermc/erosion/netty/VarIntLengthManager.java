@@ -3,13 +3,14 @@ package org.geysermc.erosion.netty;
 import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.handler.codec.CorruptedFrameException;
 
 import java.util.List;
 
-public class VarIntLengthManager extends ByteToMessageCodec<ByteBuf> {
+public final class VarIntLengthManager extends ByteToMessageCodec<ByteBuf> {
 
     private int getLengthSize(int length) {
         if ((length & -128) == 0) {

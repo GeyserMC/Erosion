@@ -4,6 +4,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerDomainSocketChannel;
@@ -13,12 +14,20 @@ import org.geysermc.erosion.netty.ErosionPacketDecoder;
 import org.geysermc.erosion.netty.ErosionPacketEncoder;
 import org.geysermc.erosion.netty.VarIntLengthManager;
 import org.geysermc.erosion.packet.ErosionPacketHandler;
+import org.geysermc.erosion.packet.backendbound.BackendboundPacketHandler;
+import org.geysermc.erosion.packet.geyserbound.GeyserboundPacketHandler;
 
+// TODO split into two classes
 public final class UnixSocketListener {
     private Channel channel;
+    private EventLoopGroup eventLoopGroup;
 
-    public void createClient(ErosionPacketHandler handler) {
-        channel = (new Bootstrap()
+    public void initializeEventLoopGroup() {
+        this.eventLoopGroup = new EpollEventLoopGroup();
+    }
+
+    public Channel createClient(GeyserboundPacketHandler handler) {
+        return (new Bootstrap()
                 .channel(EpollDomainSocketChannel.class)
                 .handler(new ChannelInitializer<Channel>() {
                     @Override
@@ -27,13 +36,13 @@ public final class UnixSocketListener {
                     }
                 })
                 .localAddress(new DomainSocketAddress("/tmp/geyser-client.sock"))
-                .group(new EpollEventLoopGroup(1))
+                .group(this.eventLoopGroup.next())
                 .bind())
                 .syncUninterruptibly()
                 .channel();
     }
 
-    public void createServer(String address, ErosionPacketHandler handler) {
+    public void createServer(String address, BackendboundPacketHandler handler) {
         channel = (new ServerBootstrap()
                 .channel(EpollServerDomainSocketChannel.class)
                 .childHandler(new ChannelInitializer<Channel>() {
@@ -43,7 +52,7 @@ public final class UnixSocketListener {
                     }
                 })
                 .localAddress(new DomainSocketAddress(address)))
-                .group(new EpollEventLoopGroup(1))
+                .group(new EpollEventLoopGroup())
                 .bind()
                 .syncUninterruptibly()
                 .channel();

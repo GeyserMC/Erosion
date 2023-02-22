@@ -3,7 +3,10 @@ package org.geysermc.erosion.packet;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.geysermc.erosion.packet.backendbound.BackendboundBatchBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundBlockRequestPacket;
+import org.geysermc.erosion.packet.backendbound.BackendboundInitializePacket;
+import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockPlacePacket;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockDataPacket;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockIdPacket;
 
@@ -19,16 +22,22 @@ public final class Packets {
         int id = 0;
         registerSending(GeyserboundBlockDataPacket.class, id++);
         registerSending(GeyserboundBlockIdPacket.class, id++);
+        registerSending(GeyserboundBlockPlacePacket.class, id++);
 
+        registerReceiving(BackendboundBatchBlockRequestPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
+        registerReceiving(BackendboundInitializePacket::new);
     }
 
     public static void initGeyser() {
         int id = 0;
+        registerSending(BackendboundBatchBlockRequestPacket.class, id++);
         registerSending(BackendboundBlockRequestPacket.class, id++);
+        registerSending(BackendboundInitializePacket.class, id++);
 
         registerReceiving(GeyserboundBlockDataPacket::new);
         registerReceiving(GeyserboundBlockIdPacket::new);
+        registerReceiving(GeyserboundBlockPlacePacket::new);
     }
 
     private static void registerSending(Class<? extends ErosionPacket<?>> packetClass, int id) {

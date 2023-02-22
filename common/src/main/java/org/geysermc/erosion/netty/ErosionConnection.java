@@ -24,6 +24,16 @@ public final class ErosionConnection extends SimpleChannelInboundHandler<Erosion
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) {
+        handler.onConnect();
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        handler.onDisconnect();
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
     }
