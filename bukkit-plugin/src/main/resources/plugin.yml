@@ -1,0 +1,7 @@
+main: org.geysermc.erosion.bukkit.ErosionBukkit
+name: ${name}
+author: ${author}
+website: ${url}
+version: ${version}
+softdepend: ["ViaVersion"]
+api-version: 1.13
