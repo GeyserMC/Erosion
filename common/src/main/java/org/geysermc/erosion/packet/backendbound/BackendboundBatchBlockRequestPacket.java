@@ -45,4 +45,16 @@ public final class BackendboundBatchBlockRequestPacket implements BackendboundPa
     public int getId() {
         return id;
     }
+
+    public List<Vector3i> getBlocks() {
+        return blocks;
+    }
+
+    @Override
+    public String toString() {
+        return "BackendboundBatchBlockRequestPacket{" +
+                "id=" + id +
+                ", blocks=" + blocks +
+                '}';
+    }
 }

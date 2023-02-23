@@ -6,9 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.geysermc.erosion.packet.backendbound.BackendboundBatchBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundInitializePacket;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockPlacePacket;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockDataPacket;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockIdPacket;
+import org.geysermc.erosion.packet.geyserbound.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +18,10 @@ public final class Packets {
 
     public static void initBackend() {
         int id = 0;
+        registerSending(GeyserboundBatchBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockDataPacket.class, id++);
         registerSending(GeyserboundBlockIdPacket.class, id++);
+        registerSending(GeyserboundBlockLookupFailPacket.class, id++);
         registerSending(GeyserboundBlockPlacePacket.class, id++);
 
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
@@ -35,8 +35,10 @@ public final class Packets {
         registerSending(BackendboundBlockRequestPacket.class, id++);
         registerSending(BackendboundInitializePacket.class, id++);
 
+        registerReceiving(GeyserboundBatchBlockIdPacket::new);
         registerReceiving(GeyserboundBlockDataPacket::new);
         registerReceiving(GeyserboundBlockIdPacket::new);
+        registerReceiving(GeyserboundBlockLookupFailPacket::new);
         registerReceiving(GeyserboundBlockPlacePacket::new);
     }
 

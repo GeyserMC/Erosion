@@ -16,6 +16,9 @@ dependencyResolutionManagement {
         }
 
         maven("https://repo.papermc.io/repository/maven-public")
+
+        // Reflection-remapper
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     }
 }
 

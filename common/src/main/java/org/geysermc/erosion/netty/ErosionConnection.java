@@ -14,7 +14,6 @@ public final class ErosionConnection extends SimpleChannelInboundHandler<Erosion
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ErosionPacket<?> msg) {
-        System.out.println(msg);
         genericsFtw(msg);
     }
 

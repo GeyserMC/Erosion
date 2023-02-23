@@ -37,4 +37,12 @@ public final class GeyserboundBlockIdPacket implements GeyserboundPacket, IdBase
     public int getBlockId() {
         return blockId;
     }
+
+    @Override
+    public String toString() {
+        return "GeyserboundBlockIdPacket{" +
+                "id=" + id +
+                ", blockId=" + blockId +
+                '}';
+    }
 }

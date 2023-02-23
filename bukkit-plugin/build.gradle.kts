@@ -5,6 +5,11 @@ dependencies {
             attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
         }
     }
+    implementation("xyz.jpenilla", "reflection-remapper", "0.1.0-SNAPSHOT")
+
+    implementation("org.geysermc.geyser.adapters", "spigot-all", "1.6-SNAPSHOT")
+
+    compileOnly("com.viaversion", "viaversion", "4.5.0")
 }
 
 application {
