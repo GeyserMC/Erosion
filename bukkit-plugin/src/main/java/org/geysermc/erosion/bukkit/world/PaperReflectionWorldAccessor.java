@@ -3,6 +3,7 @@ package org.geysermc.erosion.bukkit.world;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.MethodName;
@@ -27,10 +28,10 @@ public final class PaperReflectionWorldAccessor implements WorldAccessor {
                 getClass().getClassLoader());
         this.blockProxy = factory.reflectionProxy(BlockProxy.class);
 
-        String craftBlockData = Bukkit.getServer().getClass().getPackage().getName() + ".block.data.CraftBlockData";
+        String craftBlockData = Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock";
         try {
             Class<?> blockDataClazz = Class.forName(craftBlockData);
-            Method getBlockState = blockDataClazz.getMethod("getState");
+            Method getBlockState = blockDataClazz.getMethod("getNMS");
             this.getBlockState = MethodHandles.lookup().unreflect(getBlockState);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -38,10 +39,15 @@ public final class PaperReflectionWorldAccessor implements WorldAccessor {
     }
 
     @Override
-    public int getBlockAt(World world, int x, int y, int z) {
+    public int getBlockAt(Player player, int x, int y, int z) {
+        World world = player.getWorld();
+        if (!world.isChunkLoaded(x >> 4, z >> 4)) {
+            return 0;
+        }
+
         Block block = world.getBlockAt(x, y, z);
         try {
-            Object blockState = this.getBlockState.bindTo(block.getBlockData())
+            Object blockState = this.getBlockState.bindTo(block)
                     .invoke();
             return blockProxy.getBlockId(blockState);
         } catch (Throwable e) {

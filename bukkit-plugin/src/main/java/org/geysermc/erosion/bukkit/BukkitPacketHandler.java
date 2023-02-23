@@ -16,6 +16,7 @@ import org.geysermc.erosion.packet.geyserbound.GeyserboundBatchBlockIdPacket;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockIdPacket;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockLookupFailPacket;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundPacket;
+import org.geysermc.erosion.util.BlockPositionIterator;
 
 import java.util.logging.Logger;
 
@@ -42,12 +43,11 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     @Override
     public void handleBatchBlockRequest(BackendboundBatchBlockRequestPacket packet) {
         try {
-            // ArrayMap because we don't need to call #get
-            Object2IntMap<Vector3i> blocks = new Object2IntArrayMap<>(packet.getBlocks().size());
-            for (int i = 0; i < packet.getBlocks().size(); i++) {
-                Vector3i pos = packet.getBlocks().get(i);
-                int networkId = worldAccessor.getBlockAt(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
-                blocks.put(pos, networkId);
+            BlockPositionIterator iter = packet.getIter();
+            int[] blocks = new int[iter.getMaxIterations()];
+            for (; iter.hasNext(); iter.next()) {
+                int networkId = worldAccessor.getBlockAt(player, iter.getX(), iter.getY(), iter.getZ());
+                blocks[iter.getIteration()] = networkId;
             }
             sendPacket(new GeyserboundBatchBlockIdPacket(packet.getId(), blocks));
         } catch (Throwable e) {
@@ -60,7 +60,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     public void handleBlockRequest(BackendboundBlockRequestPacket packet) {
         try {
             Vector3i pos = packet.getPos();
-            int networkId = worldAccessor.getBlockAt(player.getWorld(), pos.getX(), pos.getY(), pos.getZ());
+            int networkId = worldAccessor.getBlockAt(player, pos.getX(), pos.getY(), pos.getZ());
             sendPacket(new GeyserboundBlockIdPacket(packet.getId(), networkId));
         } catch (Throwable e) {
             e.printStackTrace();

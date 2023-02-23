@@ -1,7 +1,7 @@
 package org.geysermc.erosion.bukkit.world;
 
 import com.viaversion.viaversion.api.data.MappingData;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -15,8 +15,8 @@ public final class ViaVersionWorldAccessor implements WorldAccessor {
     }
 
     @Override
-    public int getBlockAt(World world, int x, int y, int z) {
-        int networkId = parent.getBlockAt(world, x, y, z);
+    public int getBlockAt(Player player, int x, int y, int z) {
+        int networkId = parent.getBlockAt(player, x, y, z);
         for (int i = mappingData.size() - 1; i >= 0; i--) {
             networkId = mappingData.get(i).getNewBlockStateId(networkId);
         }

@@ -23,7 +23,7 @@ public final class BlockPlaceListener implements Listener {
             return;
         }
         Location location = event.getBlockPlaced().getLocation();
-        int networkId = worldAccessor.getBlockAt(player.getWorld(), location);
+        int networkId = worldAccessor.getBlockAt(player, location);
         handler.sendPacket(new GeyserboundBlockPlacePacket(BukkitUtils.getVector(location), networkId));
     }
 }

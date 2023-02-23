@@ -1,6 +1,6 @@
 package org.geysermc.erosion.bukkit.world;
 
-import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.geysermc.geyser.adapters.spigot.SpigotWorldAdapter;
 
 public final class AdapterWorldAccessor implements WorldAccessor {
@@ -11,7 +11,7 @@ public final class AdapterWorldAccessor implements WorldAccessor {
     }
 
     @Override
-    public int getBlockAt(World world, int x, int y, int z) {
-        return adapter.getBlockAt(world, x, y, z);
+    public int getBlockAt(Player player, int x, int y, int z) {
+        return adapter.getBlockAt(player.getWorld(), x, y, z);
     }
 }

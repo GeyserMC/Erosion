@@ -5,35 +5,27 @@ import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.IdBased;
 import org.geysermc.erosion.packet.ProtocolUtils;
+import org.geysermc.erosion.util.BlockPositionIterator;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public final class BackendboundBatchBlockRequestPacket implements BackendboundPacket, IdBased {
     private final int id;
-    private final List<Vector3i> blocks;
+    private final BlockPositionIterator iter;
 
-    public BackendboundBatchBlockRequestPacket(int id, List<Vector3i> blocks) {
+    public BackendboundBatchBlockRequestPacket(int id, BlockPositionIterator iter) {
         this.id = id;
-        this.blocks = blocks;
+        this.iter = iter;
     }
 
     public BackendboundBatchBlockRequestPacket(ByteBuf buf) {
         this.id = VarInts.readUnsignedInt(buf);
-        int size = VarInts.readUnsignedInt(buf);
-        this.blocks = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            this.blocks.add(ProtocolUtils.readBlockPos(buf));
-        }
+        this.iter = new BlockPositionIterator(buf);
     }
 
     @Override
     public void serialize(ByteBuf buf) {
         VarInts.writeUnsignedInt(buf, this.id);
-        VarInts.writeUnsignedInt(buf, this.blocks.size());
-        for (int i = 0; i < this.blocks.size(); i++) {
-            ProtocolUtils.writeBlockPos(buf, this.blocks.get(i));
-        }
+        iter.serialize(buf);
     }
 
     @Override
@@ -46,15 +38,15 @@ public final class BackendboundBatchBlockRequestPacket implements BackendboundPa
         return id;
     }
 
-    public List<Vector3i> getBlocks() {
-        return blocks;
+    public BlockPositionIterator getIter() {
+        return iter;
     }
 
     @Override
     public String toString() {
         return "BackendboundBatchBlockRequestPacket{" +
                 "id=" + id +
-                ", blocks=" + blocks +
+                ", iter=" + iter +
                 '}';
     }
 }
