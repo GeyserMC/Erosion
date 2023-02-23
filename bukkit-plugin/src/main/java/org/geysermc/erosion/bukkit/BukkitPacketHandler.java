@@ -36,6 +36,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
         player = Bukkit.getPlayer(packet.getUuid());
         if (player == null) {
             this.logger.warning("Player with UUID " + packet.getUuid() + " not found.");
+            return;
         }
         ErosionBukkit.ACTIVE_PLAYERS.put(player, this);
     }

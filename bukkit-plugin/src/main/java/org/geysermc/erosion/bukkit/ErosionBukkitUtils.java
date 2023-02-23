@@ -14,11 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class BukkitUtils {
-
-    public static Vector3i getVector(Location location) {
-        return Vector3i.from(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-    }
+public final class ErosionBukkitUtils {
 
     public static WorldAccessor determineWorldAccessor() {
         if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null) {
@@ -62,6 +58,6 @@ public final class BukkitUtils {
         return ProtocolVersion.getClosest(minecraftVersion);
     }
 
-    private BukkitUtils() {
+    private ErosionBukkitUtils() {
     }
 }

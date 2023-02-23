@@ -18,7 +18,7 @@ public final class ErosionBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        WorldAccessor worldAccessor = BukkitUtils.determineWorldAccessor();
+        WorldAccessor worldAccessor = ErosionBukkitUtils.determineWorldAccessor();
         Packets.initBackend();
 
         listener = new UnixSocketListener();
@@ -28,6 +28,7 @@ public final class ErosionBukkit extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PluginMessageHandler(this), this);
 
         Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(worldAccessor), this);
+        Bukkit.getPluginManager().registerEvents(new ErosionPistonListener(worldAccessor), this);
     }
 
     @Override

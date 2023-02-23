@@ -23,6 +23,7 @@ public final class Packets {
         registerSending(GeyserboundBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockLookupFailPacket.class, id++);
         registerSending(GeyserboundBlockPlacePacket.class, id++);
+        registerSending(GeyserboundPistonEventPacket.class, id++);
 
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
@@ -40,6 +41,7 @@ public final class Packets {
         registerReceiving(GeyserboundBlockIdPacket::new);
         registerReceiving(GeyserboundBlockLookupFailPacket::new);
         registerReceiving(GeyserboundBlockPlacePacket::new);
+        registerReceiving(GeyserboundPistonEventPacket::new);
     }
 
     private static void registerSending(Class<? extends ErosionPacket<?>> packetClass, int id) {

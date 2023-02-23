@@ -12,4 +12,6 @@ public interface GeyserboundPacketHandler extends ErosionPacketHandler {
     void handleBlockLookupFail(GeyserboundBlockLookupFailPacket packet);
 
     void handleBlockPlace(GeyserboundBlockPlacePacket packet);
+
+    void handlePistonEvent(GeyserboundPistonEventPacket packet);
 }
