@@ -16,7 +16,7 @@ import org.geysermc.erosion.packet.geyserbound.GeyserboundPistonEventPacket;
 import java.util.List;
 import java.util.Map;
 
-public class ErosionPistonListener extends PistonListener {
+public final class ErosionPistonListener extends PistonListener {
     private final WorldAccessor worldAccessor;
 
     public ErosionPistonListener(WorldAccessor worldAccessor) {
@@ -57,8 +57,6 @@ public class ErosionPistonListener extends PistonListener {
             }
             int pistonBlockId = worldAccessor.getBlockAt(player, location);
 
-            System.out.println(new GeyserboundPistonEventPacket(pistonBlockId, BukkitUtils.getVector(location),
-                    isExtend, event.isSticky(), attachedBlocks));
             entry.getValue().sendPacket(new GeyserboundPistonEventPacket(pistonBlockId, BukkitUtils.getVector(location),
                     isExtend, event.isSticky(), attachedBlocks));
         }

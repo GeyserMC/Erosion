@@ -4,7 +4,7 @@ import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.IdBased;
 
-public class GeyserboundBatchBlockIdPacket implements GeyserboundPacket, IdBased {
+public final class GeyserboundBatchBlockIdPacket implements GeyserboundPacket, IdBased {
     private final int id;
     private final int[] blocks;
 

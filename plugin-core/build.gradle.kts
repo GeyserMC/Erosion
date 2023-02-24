@@ -1,5 +1,6 @@
 dependencies {
     api(projects.common)
+    api("org.geysermc.configutils", "configutils", "1.0-SNAPSHOT")
 }
 
 java {

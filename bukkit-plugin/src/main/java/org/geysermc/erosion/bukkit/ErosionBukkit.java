@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.erosion.Constants;
+import org.geysermc.erosion.ErosionConfig;
 import org.geysermc.erosion.bukkit.world.WorldAccessor;
 import org.geysermc.erosion.netty.impl.UnixSocketListener;
 import org.geysermc.erosion.packet.Packets;
@@ -18,11 +19,12 @@ public final class ErosionBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        ErosionConfig config = ErosionConfig.load(getDataFolder().toPath());
         WorldAccessor worldAccessor = ErosionBukkitUtils.determineWorldAccessor();
         Packets.initBackend();
 
         listener = new UnixSocketListener();
-        listener.createServer("/tmp/geyser.sock", new BukkitPacketHandler(getLogger(), worldAccessor));
+        listener.createServer(config.getUnixDomainAddress(), new BukkitPacketHandler(getLogger(), worldAccessor));
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Constants.PLUGIN_MESSAGE);
         Bukkit.getPluginManager().registerEvents(new PluginMessageHandler(this), this);
