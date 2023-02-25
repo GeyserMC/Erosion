@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.geysermc.erosion.bukkit.BukkitUtils;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.MethodName;
@@ -28,7 +29,7 @@ public final class PaperReflectionWorldAccessor implements WorldAccessor {
                 getClass().getClassLoader());
         this.blockProxy = factory.reflectionProxy(BlockProxy.class);
 
-        String craftBlockData = Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock";
+        String craftBlockData = BukkitUtils.getCraftBukkitPackage() + ".block.CraftBlock";
         try {
             Class<?> blockDataClazz = Class.forName(craftBlockData);
             Method getBlockState = blockDataClazz.getMethod("getNMS");

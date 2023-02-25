@@ -25,6 +25,7 @@ dependencies {
 
     api("com.nukkitx.fastutil", "fastutil-int-object-maps", "8.5.3")
     api("com.nukkitx.fastutil", "fastutil-object-int-maps", "8.5.3")
+    implementation("org.jetbrains:annotations:20.1.0")
 }
 
 java {
