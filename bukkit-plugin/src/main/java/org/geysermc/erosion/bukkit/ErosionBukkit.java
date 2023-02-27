@@ -24,7 +24,7 @@ public final class ErosionBukkit extends JavaPlugin {
         Packets.initBackend();
 
         listener = new UnixSocketListener();
-        listener.createServer(config.getUnixDomainAddress(), new BukkitPacketHandler(getLogger(), worldAccessor));
+        listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(getLogger(), worldAccessor));
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Constants.PLUGIN_MESSAGE);
         Bukkit.getPluginManager().registerEvents(new PluginMessageHandler(this), this);
