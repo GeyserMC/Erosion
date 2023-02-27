@@ -36,7 +36,7 @@ public final class GeyserboundPistonEventPacket implements GeyserboundPacket {
         this.pos = ProtocolUtils.readBlockPos(buf);
         this.flags = buf.readByte();
         // Size of blocks cannot be greater than 12
-        int size = buf.readByte();
+        int size = (this.flags >> 2) & 0xF;
         this.attachedBlocks = new Object2IntArrayMap<>(size);
         for (int i = 0; i < size; i++) {
             int relX = buf.readByte();
@@ -51,8 +51,7 @@ public final class GeyserboundPistonEventPacket implements GeyserboundPacket {
     public void serialize(ByteBuf buf) {
         VarInts.writeUnsignedInt(buf, blockId);
         ProtocolUtils.writeBlockPos(buf, pos);
-        buf.writeByte(flags);
-        buf.writeByte(this.attachedBlocks.size());
+        buf.writeByte(flags | (this.attachedBlocks.size() << 2));
         Object2IntMaps.fastForEach(this.attachedBlocks, entry -> {
             Vector3i pos = entry.getKey();
             buf.writeByte(pos.getX() - this.pos.getX());

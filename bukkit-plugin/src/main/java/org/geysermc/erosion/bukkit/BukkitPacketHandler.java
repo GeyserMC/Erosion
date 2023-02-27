@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.geysermc.erosion.bukkit.world.WorldAccessor;
+import org.geysermc.erosion.packet.ErosionPacketSender;
 import org.geysermc.erosion.packet.backendbound.BackendboundBatchBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundInitializePacket;
@@ -23,12 +24,13 @@ import java.util.logging.Logger;
 public final class BukkitPacketHandler implements BackendboundPacketHandler {
     private final Logger logger;
     private final WorldAccessor worldAccessor;
-    private Channel channel;
+    private final ErosionPacketSender<GeyserboundPacket> packetSender;
     private Player player;
 
-    public BukkitPacketHandler(Logger logger, WorldAccessor worldAccessor) {
+    public BukkitPacketHandler(Logger logger, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender) {
         this.logger = logger;
         this.worldAccessor = worldAccessor;
+        this.packetSender = packetSender;
     }
 
     @Override
@@ -75,12 +77,12 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     }
 
     public void sendPacket(GeyserboundPacket packet) {
-        this.channel.writeAndFlush(packet);
+        this.packetSender.sendPacket(packet);
     }
 
     @Override
     public BukkitPacketHandler setChannel(Channel channel) {
-        this.channel = channel;
+        this.packetSender.setChannel(channel);
         return this;
     }
 }

@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.unix.DomainSocketAddress;
 import org.geysermc.erosion.Constants;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -15,13 +16,19 @@ public final class GeyserboundHandshake {
     private final TransportType transportType;
     private final List<String> capabilities;
 
-    public static ByteBuf create() {
+    public static ByteBuf create(String address) {
         ByteBuf buf = Unpooled.buffer();
         VarInts.writeUnsignedInt(buf, Constants.VERSION);
-        buf.writeByte(0);
-        TransportType transportType = new UnixDomainTransportType("/tmp/geyser.sock");
+        TransportType transportType;
+        if (address == null) {
+            transportType = new TcpTransportType();
+        } else {
+            transportType = new UnixDomainTransportType(address);
+        }
+        buf.writeByte(transportType.getId());
         transportType.write(buf);
-        VarInts.writeUnsignedInt(buf, 0);
+
+        VarInts.writeUnsignedInt(buf, 0); // Capabilities
         return buf;
     }
 
@@ -30,6 +37,8 @@ public final class GeyserboundHandshake {
         int transportType = buf.readByte();
         if (transportType == 0) {
             this.transportType = new UnixDomainTransportType(buf);
+        } else if (transportType == 1) {
+            this.transportType = new TcpTransportType();
         } else {
             throw new IllegalArgumentException();
         }
@@ -53,9 +62,28 @@ public final class GeyserboundHandshake {
     }
 
     public interface TransportType {
+        @Nullable
         SocketAddress getSocketAddress();
 
+        int getId();
+
         void write(ByteBuf buf);
+    }
+
+    public static final class TcpTransportType implements TransportType {
+        @Override
+        public SocketAddress getSocketAddress() {
+            return null;
+        }
+
+        @Override
+        public int getId() {
+            return 1;
+        }
+
+        @Override
+        public void write(ByteBuf buf) {
+        }
     }
 
     public static final class UnixDomainTransportType implements TransportType {
@@ -72,6 +100,11 @@ public final class GeyserboundHandshake {
         @Override
         public SocketAddress getSocketAddress() {
             return new DomainSocketAddress(address);
+        }
+
+        @Override
+        public int getId() {
+            return 0;
         }
 
         @Override

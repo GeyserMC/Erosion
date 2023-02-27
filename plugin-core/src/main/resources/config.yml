@@ -1,1 +1,2 @@
+unix-socket-enabled: false
 unix-domain-address: "/tmp/geyser.sock"

@@ -1,15 +1,11 @@
 package org.geysermc.erosion.netty;
 
-import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.geysermc.erosion.packet.ErosionPacket;
 import org.geysermc.erosion.packet.Packets;
 
 import java.util.List;
-import java.util.function.Function;
 
 public final class ErosionPacketDecoder extends ByteToMessageDecoder {
 
@@ -20,10 +16,7 @@ public final class ErosionPacketDecoder extends ByteToMessageDecoder {
                 return;
             }
 
-            int id = VarInts.readUnsignedInt(in);
-            Function<ByteBuf, ? extends ErosionPacket<?>> constructor = Packets.RECEIVING.get(id); // TODO add bounds check
-            ErosionPacket<?> packet = constructor.apply(in);
-            out.add(packet);
+            out.add(Packets.decode(in));
         } catch (Throwable t) {
             t.printStackTrace();
         }

@@ -8,7 +8,14 @@ import org.geysermc.configutils.updater.change.Changes;
 import java.nio.file.Path;
 
 public final class ErosionConfig {
+    private static ErosionConfig INSTANCE;
+
+    private boolean unixDomainEnabled = false;
     private String unixDomainAddress = "/tmp/erosion.sock";
+
+    public boolean isUnixDomainEnabled() {
+        return unixDomainEnabled;
+    }
 
     public String getUnixDomainAddress() {
         return unixDomainAddress;
@@ -23,12 +30,16 @@ public final class ErosionConfig {
                 .changes(Changes.builder().build())
                 .build();
         try {
-            return utilities.executeOn(ErosionConfig.class);
+            return (INSTANCE = utilities.executeOn(ErosionConfig.class));
         } catch (Throwable throwable) {
             throw new RuntimeException(
                     "Failed to load the config! Try to delete the config file if this error persists",
                     throwable
             );
         }
+    }
+
+    public static ErosionConfig getInstance() {
+        return INSTANCE;
     }
 }

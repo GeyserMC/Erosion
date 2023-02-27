@@ -1,12 +1,9 @@
 package org.geysermc.erosion.packet.backendbound;
 
-import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.IdBased;
-import org.geysermc.erosion.packet.ProtocolUtils;
 import org.geysermc.erosion.util.BlockPositionIterator;
-
 
 public final class BackendboundBatchBlockRequestPacket implements BackendboundPacket, IdBased {
     private final int id;

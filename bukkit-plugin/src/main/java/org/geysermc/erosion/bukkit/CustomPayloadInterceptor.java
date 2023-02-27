@@ -1,22 +1,55 @@
 package org.geysermc.erosion.bukkit;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.AttributeKey;
+import org.bukkit.entity.Player;
+import org.geysermc.erosion.Constants;
+import org.geysermc.erosion.packet.ErosionPacket;
+import org.geysermc.erosion.packet.Packets;
+import org.geysermc.erosion.packet.backendbound.BackendboundPacket;
+import org.geysermc.erosion.packet.backendbound.BackendboundPacketHandler;
+import org.geysermc.erosion.util.ReflectionUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * We want to avoid processing all packets on the server thread.
  */
-public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter {
+public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter implements PayloadInterceptor {
     private static final Class<?> customPayloadClass = findCustomPayloadClass();
-    //private static final MethodHandle getChannel;
+    private static final Field channelField = findGetChannel();
+    private static final Field bufField = findByteBuf();
+
+    private final Function<Player, BukkitPacketHandler> createHandler;
+
+    public CustomPayloadInterceptor(Function<Player, BukkitPacketHandler> createHandler) {
+        this.createHandler = createHandler;
+    }
 
     @Override
     public void channelRead(@NotNull ChannelHandlerContext ctx, @NotNull Object msg) throws Exception {
         if (msg.getClass() == customPayloadClass) {
-            System.out.println(msg.toString());
+            String channel = channelField.get(msg).toString();
+            if (Constants.PLUGIN_MESSAGE.equals(channel)) {
+                ByteBuf buf = (ByteBuf) bufField.get(msg);
+                buf.markReaderIndex();
+                if (buf.isReadable()) {
+                    ErosionPacket<?> packet = Packets.decode(buf);
+                    BackendboundPacketHandler handler = ctx.channel().attr(HANDLER_KEY).get();
+                    ((BackendboundPacket) packet).handle(handler);
+                }
+                buf.resetReaderIndex();
+            }
         }
         // Always forward this
         super.channelRead(ctx, msg);
@@ -38,7 +71,70 @@ public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter
         }
     }
 
-    private static MethodHandle findGetChannel() {
-        return null;
+    private static Field findGetChannel() {
+        Field channel = Arrays.stream(customPayloadClass.getFields())
+                .filter(field -> !Modifier.isStatic(field.getModifiers()))
+                .filter(field -> {
+                    Class<?> clazz = field.getType();
+                    return clazz == String.class || "MinecraftKey".equals(clazz.getSimpleName());
+                })
+                .findAny()
+                .orElseThrow(RuntimeException::new);
+        if (!channel.isAccessible()) {
+            channel.setAccessible(true);
+        }
+        return channel;
+    }
+
+    private static Field findByteBuf() {
+        Field buf = Arrays.stream(customPayloadClass.getFields())
+                .filter(field -> ByteBuf.class.isAssignableFrom(field.getType()))
+                .findAny()
+                .orElseThrow(RuntimeException::new);
+        if (!buf.isAccessible()) {
+            buf.setAccessible(true);
+        }
+        return buf;
+    }
+
+    private static final Method getPlayerHandle;
+    private static final Field connection;
+    private static final Field networkManager;
+    private static final Field playerChannelField;
+
+    static {
+        ReflectionUtils.prefix = BukkitUtils.getLegacyNmsPackage();
+        try {
+            getPlayerHandle = Class.forName(BukkitUtils.getCraftBukkitPackage() + ".entity.CraftPlayer")
+                    .getMethod("getHandle");
+            Class<?> playerConnectionClass = ReflectionUtils.getClassOrFallback(
+                    "net.minecraft.server.network.PlayerConnection", ReflectionUtils.prefix + ".PlayerConnection");
+            connection = ReflectionUtils.getFieldOfType(getPlayerHandle.getReturnType(), playerConnectionClass);
+            Class<?> networkManagerClass = ReflectionUtils.getClassOrFallback(
+                    "net.minecraft.network.NetworkManager", ReflectionUtils.prefix + ".NetworkManager");
+            networkManager = ReflectionUtils.getFieldOfType(connection.getType(), networkManagerClass);
+            playerChannelField = ReflectionUtils.getFieldOfType(networkManagerClass, Channel.class);
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static final AttributeKey<BukkitPacketHandler> HANDLER_KEY = AttributeKey.valueOf("erosion-handler");
+
+    @Override
+    public BukkitPacketHandler inject(Player player) {
+        try {
+            Object serverPlayer = getPlayerHandle.invoke(player);
+            Object playerConnection = connection.get(serverPlayer);
+            Object networkManagerObject = networkManager.get(playerConnection);
+            Channel channel = (Channel) playerChannelField.get(networkManagerObject);
+
+            channel.pipeline().addBefore("packet_handler", "erosion_payload_interceptor", this);
+            BukkitPacketHandler handler = createHandler.apply(player);
+            channel.attr(HANDLER_KEY).set(handler);
+            return handler;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
