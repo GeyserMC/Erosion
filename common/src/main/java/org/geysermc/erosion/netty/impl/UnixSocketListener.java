@@ -17,6 +17,8 @@ import org.geysermc.erosion.packet.ErosionPacketHandler;
 import org.geysermc.erosion.packet.backendbound.BackendboundPacketHandler;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundPacketHandler;
 
+import java.util.function.Supplier;
+
 // TODO split into two classes
 public final class UnixSocketListener {
     private Channel channel;
@@ -42,13 +44,13 @@ public final class UnixSocketListener {
                 .channel();
     }
 
-    public void createServer(String address, BackendboundPacketHandler handler) {
+    public void createServer(String address, Supplier<BackendboundPacketHandler> handler) {
         channel = (new ServerBootstrap()
                 .channel(EpollServerDomainSocketChannel.class)
                 .childHandler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) {
-                        initPipeline(ch, handler);
+                        initPipeline(ch, handler.get());
                     }
                 })
                 .localAddress(new DomainSocketAddress(address)))
