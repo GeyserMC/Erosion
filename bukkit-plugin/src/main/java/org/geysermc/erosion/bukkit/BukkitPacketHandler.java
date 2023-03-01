@@ -27,6 +27,11 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     private final ErosionPacketSender<GeyserboundPacket> packetSender;
     private Player player;
 
+    public BukkitPacketHandler(Logger logger, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender, Player player) {
+        this(logger, worldAccessor, packetSender);
+        this.player = player;
+    }
+
     public BukkitPacketHandler(Logger logger, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender) {
         this.logger = logger;
         this.worldAccessor = worldAccessor;
@@ -35,12 +40,14 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     @Override
     public void handleInitialization(BackendboundInitializePacket packet) {
-        player = Bukkit.getPlayer(packet.getUuid());
-        if (player == null) {
-            this.logger.warning("Player with UUID " + packet.getUuid() + " not found.");
-            return;
+        if (player != null) {
+            player = Bukkit.getPlayer(packet.getUuid());
+            if (player == null) {
+                this.logger.warning("Player with UUID " + packet.getUuid() + " not found.");
+                return;
+            }
+            ErosionBukkit.ACTIVE_PLAYERS.put(player, this);
         }
-        ErosionBukkit.ACTIVE_PLAYERS.put(player, this);
     }
 
     @Override

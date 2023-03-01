@@ -6,7 +6,7 @@ import org.geysermc.erosion.packet.ProtocolUtils;
 import java.util.UUID;
 
 /**
- * The first packet sent.
+ * The first packet sent on non-plugin-message connections.
  */
 public final class BackendboundInitializePacket implements BackendboundPacket {
     private final UUID uuid;

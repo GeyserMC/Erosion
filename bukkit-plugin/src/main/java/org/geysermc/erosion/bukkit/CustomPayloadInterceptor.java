@@ -1,8 +1,8 @@
 package org.geysermc.erosion.bukkit;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
@@ -20,11 +20,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * We want to avoid processing all packets on the server thread.
  */
+@ChannelHandler.Sharable
 public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter implements PayloadInterceptor {
     private static final Class<?> customPayloadClass = findCustomPayloadClass();
     private static final Field channelField = findGetChannel();

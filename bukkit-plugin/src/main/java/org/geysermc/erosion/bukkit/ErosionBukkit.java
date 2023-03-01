@@ -32,7 +32,7 @@ public final class ErosionBukkit extends JavaPlugin {
             interceptor = null;
         } else {
             interceptor = new CustomPayloadInterceptor(player ->
-                    new BukkitPacketHandler(getLogger(), worldAccessor, new PluginMessageSender(this, player)));
+                    new BukkitPacketHandler(getLogger(), worldAccessor, new PluginMessageSender(this, player), player));
         }
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Constants.PLUGIN_MESSAGE);
