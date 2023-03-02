@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.geysermc.erosion.packet.backendbound.BackendboundBatchBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundBlockRequestPacket;
 import org.geysermc.erosion.packet.backendbound.BackendboundInitializePacket;
+import org.geysermc.erosion.packet.backendbound.BackendboundPickBlockPacket;
 import org.geysermc.erosion.packet.geyserbound.*;
 
 import java.io.IOException;
@@ -26,11 +27,13 @@ public final class Packets {
         registerSending(GeyserboundBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockLookupFailPacket.class, id++);
         registerSending(GeyserboundBlockPlacePacket.class, id++);
+        registerSending(GeyserboundPickBlockPacket.class, id++);
         registerSending(GeyserboundPistonEventPacket.class, id++);
 
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
         registerReceiving(BackendboundInitializePacket::new);
+        registerReceiving(BackendboundPickBlockPacket::new);
     }
 
     public static void initGeyser() {
@@ -38,12 +41,14 @@ public final class Packets {
         registerSending(BackendboundBatchBlockRequestPacket.class, id++);
         registerSending(BackendboundBlockRequestPacket.class, id++);
         registerSending(BackendboundInitializePacket.class, id++);
+        registerSending(BackendboundPickBlockPacket.class, id++);
 
         registerReceiving(GeyserboundBatchBlockIdPacket::new);
         registerReceiving(GeyserboundBlockDataPacket::new);
         registerReceiving(GeyserboundBlockIdPacket::new);
         registerReceiving(GeyserboundBlockLookupFailPacket::new);
         registerReceiving(GeyserboundBlockPlacePacket::new);
+        registerReceiving(GeyserboundPickBlockPacket::new);
         registerReceiving(GeyserboundPistonEventPacket::new);
     }
 
@@ -57,6 +62,9 @@ public final class Packets {
 
     public static ErosionPacket<?> decode(ByteBuf in) {
         int id = VarInts.readUnsignedInt(in);
+        if (id >= RECEIVING.size()) {
+            throw new RuntimeException("ID " + id + " does not exist");
+        }
         Function<ByteBuf, ? extends ErosionPacket<?>> constructor = RECEIVING.get(id); // TODO add bounds check
         ErosionPacket<?> packet = constructor.apply(in);
         if (in.isReadable()) {

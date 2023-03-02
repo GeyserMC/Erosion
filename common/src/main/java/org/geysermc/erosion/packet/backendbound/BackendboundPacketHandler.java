@@ -8,4 +8,6 @@ public interface BackendboundPacketHandler extends ErosionPacketHandler {
     void handleBatchBlockRequest(BackendboundBatchBlockRequestPacket packet);
 
     void handleBlockRequest(BackendboundBlockRequestPacket packet);
+
+    void handlePickBlock(BackendboundPickBlockPacket packet);
 }

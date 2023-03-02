@@ -20,7 +20,7 @@ dependencies {
     api("io.netty", "netty-transport-native-epoll", "4.1.43.Final")
     // TODO just needed for VarInt encoding. Might be wholly unnecessary.
     api("com.nukkitx.network", "common", "1.6.25")
-    api("com.nukkitx", "nbt", "2.2.1")
+    api("com.github.steveice10", "opennbt", "1.4")
     api("com.nukkitx", "math", "1.1.1")
 
     api("com.nukkitx.fastutil", "fastutil-int-object-maps", "8.5.3")

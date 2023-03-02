@@ -28,11 +28,11 @@ public final class ErosionBukkit extends JavaPlugin {
         PayloadInterceptor interceptor;
         if (config.isUnixDomainEnabled()) {
             listener = new UnixSocketListener();
-            listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(getLogger(), worldAccessor, new NettyPacketSender<>()));
+            listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(this, worldAccessor, new NettyPacketSender<>()));
             interceptor = null;
         } else {
             interceptor = new CustomPayloadInterceptor(player ->
-                    new BukkitPacketHandler(getLogger(), worldAccessor, new PluginMessageSender(this, player), player));
+                    new BukkitPacketHandler(this, worldAccessor, new PluginMessageSender(this, player), player));
         }
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Constants.PLUGIN_MESSAGE);

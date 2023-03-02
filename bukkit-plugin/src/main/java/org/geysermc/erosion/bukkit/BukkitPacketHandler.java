@@ -1,5 +1,6 @@
 package org.geysermc.erosion.bukkit;
 
+import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.nukkitx.math.vector.Vector3i;
 import io.netty.channel.Channel;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
@@ -7,33 +8,28 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.geysermc.erosion.bukkit.world.WorldAccessor;
 import org.geysermc.erosion.packet.ErosionPacketSender;
-import org.geysermc.erosion.packet.backendbound.BackendboundBatchBlockRequestPacket;
-import org.geysermc.erosion.packet.backendbound.BackendboundBlockRequestPacket;
-import org.geysermc.erosion.packet.backendbound.BackendboundInitializePacket;
-import org.geysermc.erosion.packet.backendbound.BackendboundPacketHandler;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundBatchBlockIdPacket;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockIdPacket;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockLookupFailPacket;
-import org.geysermc.erosion.packet.geyserbound.GeyserboundPacket;
+import org.geysermc.erosion.packet.backendbound.*;
+import org.geysermc.erosion.packet.geyserbound.*;
 import org.geysermc.erosion.util.BlockPositionIterator;
 
 import java.util.logging.Logger;
 
 public final class BukkitPacketHandler implements BackendboundPacketHandler {
-    private final Logger logger;
+    private final Plugin plugin;
     private final WorldAccessor worldAccessor;
     private final ErosionPacketSender<GeyserboundPacket> packetSender;
     private Player player;
 
-    public BukkitPacketHandler(Logger logger, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender, Player player) {
-        this(logger, worldAccessor, packetSender);
+    public BukkitPacketHandler(Plugin plugin, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender, Player player) {
+        this(plugin, worldAccessor, packetSender);
         this.player = player;
     }
 
-    public BukkitPacketHandler(Logger logger, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender) {
-        this.logger = logger;
+    public BukkitPacketHandler(Plugin plugin, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender) {
+        this.plugin = plugin;
         this.worldAccessor = worldAccessor;
         this.packetSender = packetSender;
     }
@@ -43,7 +39,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
         if (player != null) {
             player = Bukkit.getPlayer(packet.getUuid());
             if (player == null) {
-                this.logger.warning("Player with UUID " + packet.getUuid() + " not found.");
+                this.plugin.getLogger().warning("Player with UUID " + packet.getUuid() + " not found.");
                 return;
             }
             ErosionBukkit.ACTIVE_PLAYERS.put(player, this);
@@ -76,6 +72,15 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
             e.printStackTrace();
             sendPacket(new GeyserboundBlockLookupFailPacket(packet.getId()));
         }
+    }
+
+    @Override
+    public void handlePickBlock(BackendboundPickBlockPacket packet) {
+        Bukkit.getScheduler().runTask(this.plugin, () -> {
+            Vector3i pos = packet.getPos();
+            CompoundTag tag = PickBlockUtils.pickBlock(this.player, pos.getX(), pos.getY(), pos.getZ());
+            sendPacket(new GeyserboundPickBlockPacket(tag));
+        });
     }
 
     @Override
