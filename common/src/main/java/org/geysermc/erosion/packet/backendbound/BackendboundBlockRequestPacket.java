@@ -8,34 +8,25 @@ import org.geysermc.erosion.packet.ProtocolUtils;
 
 import java.util.UUID;
 
-public final class BackendboundBlockRequestPacket implements BackendboundPacket, IdBased {
-    private final int id;
+public final class BackendboundBlockRequestPacket implements BackendboundPacket {
     private final Vector3i pos;
 
-    public BackendboundBlockRequestPacket(int id, Vector3i pos) {
-        this.id = id;
+    public BackendboundBlockRequestPacket(Vector3i pos) {
         this.pos = pos;
     }
 
     public BackendboundBlockRequestPacket(ByteBuf buf) {
-        this.id = VarInts.readUnsignedInt(buf);
         this.pos = ProtocolUtils.readBlockPos(buf);
     }
 
     @Override
     public void serialize(ByteBuf buf) {
-        VarInts.writeUnsignedInt(buf, this.id);
         ProtocolUtils.writeBlockPos(buf, this.pos);
     }
 
     @Override
     public void handle(BackendboundPacketHandler packetHandler) {
         packetHandler.handleBlockRequest(this);
-    }
-
-    @Override
-    public int getId() {
-        return id;
     }
 
     public Vector3i getPos() {
@@ -45,8 +36,7 @@ public final class BackendboundBlockRequestPacket implements BackendboundPacket,
     @Override
     public String toString() {
         return "BackendboundBlockRequestPacket{" +
-                "id=" + id +
-                ", pos=" + pos +
+                "pos=" + pos +
                 '}';
     }
 }

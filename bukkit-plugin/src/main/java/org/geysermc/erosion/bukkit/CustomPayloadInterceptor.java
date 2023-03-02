@@ -72,7 +72,7 @@ public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter
     }
 
     private static Field findGetChannel() {
-        Field channel = Arrays.stream(customPayloadClass.getFields())
+        Field channel = Arrays.stream(customPayloadClass.getDeclaredFields())
                 .filter(field -> !Modifier.isStatic(field.getModifiers()))
                 .filter(field -> {
                     Class<?> clazz = field.getType();
@@ -87,7 +87,7 @@ public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter
     }
 
     private static Field findByteBuf() {
-        Field buf = Arrays.stream(customPayloadClass.getFields())
+        Field buf = Arrays.stream(customPayloadClass.getDeclaredFields())
                 .filter(field -> ByteBuf.class.isAssignableFrom(field.getType()))
                 .findAny()
                 .orElseThrow(RuntimeException::new);

@@ -4,34 +4,25 @@ import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.IdBased;
 
-public final class GeyserboundBlockIdPacket implements GeyserboundPacket, IdBased {
-    private final int id;
+public final class GeyserboundBlockIdPacket implements GeyserboundPacket {
     private final int blockId;
 
-    public GeyserboundBlockIdPacket(int id, int blockId) {
-        this.id = id;
+    public GeyserboundBlockIdPacket(int blockId) {
         this.blockId = blockId;
     }
 
     public GeyserboundBlockIdPacket(ByteBuf buf) {
-        this.id = VarInts.readUnsignedInt(buf);
         this.blockId = VarInts.readUnsignedInt(buf);
     }
 
     @Override
     public void serialize(ByteBuf buf) {
-        VarInts.writeUnsignedInt(buf, this.id);
         VarInts.writeUnsignedInt(buf, this.blockId);
     }
 
     @Override
     public void handle(GeyserboundPacketHandler packetHandler) {
         packetHandler.handleBlockId(this);
-    }
-
-    @Override
-    public int getId() {
-        return id;
     }
 
     public int getBlockId() {
@@ -41,8 +32,7 @@ public final class GeyserboundBlockIdPacket implements GeyserboundPacket, IdBase
     @Override
     public String toString() {
         return "GeyserboundBlockIdPacket{" +
-                "id=" + id +
-                ", blockId=" + blockId +
+                "blockId=" + blockId +
                 '}';
     }
 }
