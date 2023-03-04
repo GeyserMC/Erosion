@@ -1,8 +1,6 @@
 package org.geysermc.erosion.packet.geyserbound;
 
-import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
-import org.geysermc.erosion.packet.IdBased;
 import org.geysermc.erosion.packet.ProtocolUtils;
 
 public final class GeyserboundBlockDataPacket implements GeyserboundPacket {

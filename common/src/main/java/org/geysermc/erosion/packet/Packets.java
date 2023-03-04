@@ -22,6 +22,7 @@ public final class Packets {
 
     public static void initBackend() {
         int id = 0;
+        registerSending(GeyserboundHandshakePacket.class, id++);
         registerSending(GeyserboundBatchBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockDataPacket.class, id++);
         registerSending(GeyserboundBlockIdPacket.class, id++);
@@ -30,19 +31,20 @@ public final class Packets {
         registerSending(GeyserboundPickBlockPacket.class, id++);
         registerSending(GeyserboundPistonEventPacket.class, id++);
 
+        registerReceiving(BackendboundInitializePacket::new);
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
-        registerReceiving(BackendboundInitializePacket::new);
         registerReceiving(BackendboundPickBlockPacket::new);
     }
 
     public static void initGeyser() {
         int id = 0;
+        registerSending(BackendboundInitializePacket.class, id++);
         registerSending(BackendboundBatchBlockRequestPacket.class, id++);
         registerSending(BackendboundBlockRequestPacket.class, id++);
-        registerSending(BackendboundInitializePacket.class, id++);
         registerSending(BackendboundPickBlockPacket.class, id++);
 
+        registerReceiving(GeyserboundHandshakePacket::new);
         registerReceiving(GeyserboundBatchBlockIdPacket::new);
         registerReceiving(GeyserboundBlockDataPacket::new);
         registerReceiving(GeyserboundBlockIdPacket::new);

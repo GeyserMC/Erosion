@@ -10,4 +10,8 @@ public interface WorldAccessor {
     }
 
     int getBlockAt(Player player, int x, int y, int z);
+
+    default String getLoggedName() {
+        return getClass().getSimpleName();
+    }
 }

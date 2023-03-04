@@ -3,6 +3,8 @@ package org.geysermc.erosion.packet.geyserbound;
 import org.geysermc.erosion.packet.ErosionPacketHandler;
 
 public interface GeyserboundPacketHandler extends ErosionPacketHandler {
+    void handleHandshake(GeyserboundHandshakePacket packet);
+
     void handleBatchBlockId(GeyserboundBatchBlockIdPacket packet);
 
     void handleBlockData(GeyserboundBlockDataPacket packet);

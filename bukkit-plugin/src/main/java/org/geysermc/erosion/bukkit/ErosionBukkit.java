@@ -23,6 +23,7 @@ public final class ErosionBukkit extends JavaPlugin {
     public void onEnable() {
         ErosionConfig config = ErosionConfig.load(getDataFolder().toPath());
         WorldAccessor worldAccessor = ErosionBukkitUtils.determineWorldAccessor();
+        getLogger().info("World accessor type: " + worldAccessor.getLoggedName());
         Packets.initBackend();
 
         PayloadInterceptor interceptor;

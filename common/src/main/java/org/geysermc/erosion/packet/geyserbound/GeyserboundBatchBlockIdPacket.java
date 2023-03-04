@@ -2,7 +2,8 @@ package org.geysermc.erosion.packet.geyserbound;
 
 import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
-import org.geysermc.erosion.packet.IdBased;
+
+import java.util.Arrays;
 
 public final class GeyserboundBatchBlockIdPacket implements GeyserboundPacket {
     private final int[] blocks;
@@ -38,7 +39,7 @@ public final class GeyserboundBatchBlockIdPacket implements GeyserboundPacket {
     @Override
     public String toString() {
         return "GeyserboundBatchBlockIdPacket{" +
-                "blocks=" + blocks +
+                "blocks=" + Arrays.toString(blocks) +
                 '}';
     }
 }

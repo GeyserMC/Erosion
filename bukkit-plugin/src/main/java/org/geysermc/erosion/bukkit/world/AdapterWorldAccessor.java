@@ -14,4 +14,9 @@ public final class AdapterWorldAccessor implements WorldAccessor {
     public int getBlockAt(Player player, int x, int y, int z) {
         return adapter.getBlockAt(player.getWorld(), x, y, z);
     }
+
+    @Override
+    public String getLoggedName() {
+        return WorldAccessor.super.getLoggedName() + "{" + adapter.getClass().getSimpleName() + "}";
+    }
 }

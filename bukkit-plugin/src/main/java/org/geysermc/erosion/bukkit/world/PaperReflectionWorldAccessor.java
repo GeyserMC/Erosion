@@ -1,10 +1,9 @@
 package org.geysermc.erosion.bukkit.world;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.geysermc.erosion.bukkit.BukkitUtils;
+import org.geysermc.erosion.bukkit.ErosionBukkitUtils;
 import xyz.jpenilla.reflectionremapper.ReflectionRemapper;
 import xyz.jpenilla.reflectionremapper.proxy.ReflectionProxyFactory;
 import xyz.jpenilla.reflectionremapper.proxy.annotation.MethodName;
@@ -14,7 +13,6 @@ import xyz.jpenilla.reflectionremapper.proxy.annotation.Type;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 
 /**
  * Used as a fallback that will *probably* work for new versions.
@@ -29,12 +27,9 @@ public final class PaperReflectionWorldAccessor implements WorldAccessor {
                 getClass().getClassLoader());
         this.blockProxy = factory.reflectionProxy(BlockProxy.class);
 
-        String craftBlockData = BukkitUtils.getCraftBukkitPackage() + ".block.CraftBlock";
         try {
-            Class<?> blockDataClazz = Class.forName(craftBlockData);
-            Method getBlockState = blockDataClazz.getMethod("getNMS");
-            this.getBlockState = MethodHandles.lookup().unreflect(getBlockState);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
+            this.getBlockState = MethodHandles.lookup().unreflect(ErosionBukkitUtils.findBlockNmsMethod());
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

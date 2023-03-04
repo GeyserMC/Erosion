@@ -22,4 +22,9 @@ public final class ViaVersionWorldAccessor implements WorldAccessor {
         }
         return networkId;
     }
+
+    @Override
+    public String getLoggedName() {
+        return WorldAccessor.super.getLoggedName() + "[" + this.parent.getLoggedName() + "]";
+    }
 }

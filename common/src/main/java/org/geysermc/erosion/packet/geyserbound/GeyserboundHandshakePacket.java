@@ -1,38 +1,46 @@
-package org.geysermc.erosion.packet;
+package org.geysermc.erosion.packet.geyserbound;
 
 import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.unix.DomainSocketAddress;
 import org.geysermc.erosion.Constants;
+import org.geysermc.erosion.packet.ProtocolUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public final class GeyserboundHandshake {
+public final class GeyserboundHandshakePacket implements GeyserboundPacket {
     private final int version;
     private final TransportType transportType;
     private final List<String> capabilities;
 
-    public static ByteBuf create(String address) {
-        ByteBuf buf = Unpooled.buffer();
-        VarInts.writeUnsignedInt(buf, Constants.VERSION);
-        TransportType transportType;
+    public GeyserboundHandshakePacket(String address) {
+        this.version = Constants.VERSION;
         if (address == null) {
-            transportType = new TcpTransportType();
+            this.transportType = new TcpTransportType();
         } else {
-            transportType = new UnixDomainTransportType(address);
+            this.transportType = new UnixDomainTransportType(address);
         }
-        buf.writeByte(transportType.getId());
-        transportType.write(buf);
-
-        VarInts.writeUnsignedInt(buf, 0); // Capabilities
-        return buf;
+        this.capabilities = Collections.emptyList();
     }
 
-    public GeyserboundHandshake(ByteBuf buf) {
+    @Override
+    public void serialize(ByteBuf buf) {
+        VarInts.writeUnsignedInt(buf, Constants.VERSION);
+        buf.writeByte(this.transportType.getId());
+        this.transportType.write(buf);
+
+        VarInts.writeUnsignedInt(buf, this.capabilities.size());
+        for (int i = 0; i < this.capabilities.size(); i++) {
+            ProtocolUtils.writeString(buf, this.capabilities.get(i));
+        }
+    }
+
+    public GeyserboundHandshakePacket(ByteBuf buf) {
         this.version = VarInts.readUnsignedInt(buf);
         int transportType = buf.readByte();
         if (transportType == 0) {
@@ -47,6 +55,11 @@ public final class GeyserboundHandshake {
         for (int i = 0; i < size; i++) {
             capabilities.add(ProtocolUtils.readString(buf));
         }
+    }
+
+    @Override
+    public void handle(GeyserboundPacketHandler packetHandler) {
+        packetHandler.handleHandshake(this);
     }
 
     public int getVersion() {
