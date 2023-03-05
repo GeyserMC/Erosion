@@ -19,8 +19,13 @@ import java.util.function.Function;
 public final class Packets {
     public static final Object2IntMap<Class<? extends ErosionPacket<?>>> SENDING = new Object2IntOpenHashMap<>(); // Use Reference2Int if you use this
     public static final List<Function<ByteBuf, ? extends ErosionPacket<?>>> RECEIVING = new ArrayList<>();
+    private static boolean INITIALIZED = false;
 
     public static void initBackend() {
+        if (INITIALIZED) {
+            return;
+        }
+
         int id = 0;
         registerSending(GeyserboundHandshakePacket.class, id++);
         registerSending(GeyserboundBatchBlockIdPacket.class, id++);
@@ -35,9 +40,15 @@ public final class Packets {
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
         registerReceiving(BackendboundPickBlockPacket::new);
+
+        INITIALIZED = true;
     }
 
     public static void initGeyser() {
+        if (INITIALIZED) {
+            return;
+        }
+
         int id = 0;
         registerSending(BackendboundInitializePacket.class, id++);
         registerSending(BackendboundBatchBlockRequestPacket.class, id++);
@@ -52,6 +63,8 @@ public final class Packets {
         registerReceiving(GeyserboundBlockPlacePacket::new);
         registerReceiving(GeyserboundPickBlockPacket::new);
         registerReceiving(GeyserboundPistonEventPacket::new);
+
+        INITIALIZED = true;
     }
 
     private static void registerSending(Class<? extends ErosionPacket<?>> packetClass, int id) {

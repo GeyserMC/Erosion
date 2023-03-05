@@ -8,7 +8,7 @@ import org.geysermc.erosion.ErosionConfig;
 import org.geysermc.erosion.bukkit.pluginmessage.PluginMessageSender;
 import org.geysermc.erosion.bukkit.world.WorldAccessor;
 import org.geysermc.erosion.netty.NettyPacketSender;
-import org.geysermc.erosion.netty.impl.UnixSocketListener;
+import org.geysermc.erosion.netty.impl.UnixSocketServerListener;
 import org.geysermc.erosion.packet.Packets;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class ErosionBukkit extends JavaPlugin {
     public static final Map<Player, BukkitPacketHandler> ACTIVE_PLAYERS = new ConcurrentHashMap<>();
 
-    private UnixSocketListener listener;
+    private UnixSocketServerListener listener;
 
     @Override
     public void onEnable() {
@@ -28,7 +28,7 @@ public final class ErosionBukkit extends JavaPlugin {
 
         PayloadInterceptor interceptor;
         if (config.isUnixDomainEnabled()) {
-            listener = new UnixSocketListener();
+            listener = new UnixSocketServerListener();
             listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(this, worldAccessor, new NettyPacketSender<>()));
             interceptor = null;
         } else {
