@@ -4,7 +4,7 @@ import com.nukkitx.math.vector.Vector3i;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.ProtocolUtils;
 
-public class BackendboundPickBlockPacket implements BackendboundPacket {
+public final class BackendboundPickBlockPacket implements BackendboundPacket {
     private final Vector3i pos;
 
     public BackendboundPickBlockPacket(ByteBuf buf) {

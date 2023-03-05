@@ -6,9 +6,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollDomainSocketChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.unix.DomainSocketAddress;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundPacketHandler;
 
+import java.net.SocketAddress;
+
+// Could just... move this to Geyser.
 public final class UnixSocketClientListener extends AbstractUnixSocketListener {
     private EventLoopGroup eventLoopGroup;
 
@@ -18,9 +20,9 @@ public final class UnixSocketClientListener extends AbstractUnixSocketListener {
         }
     }
 
-    public Channel createClient(GeyserboundPacketHandler handler) {
+    public void createClient(GeyserboundPacketHandler handler, SocketAddress address) {
         initializeEventLoopGroup();
-        return (new Bootstrap()
+        (new Bootstrap()
                 .channel(EpollDomainSocketChannel.class)
                 .handler(new ChannelInitializer<Channel>() {
                     @Override
@@ -28,9 +30,8 @@ public final class UnixSocketClientListener extends AbstractUnixSocketListener {
                         initPipeline(ch, handler);
                     }
                 })
-                .localAddress(new DomainSocketAddress("/tmp/geyser-client.sock"))
                 .group(this.eventLoopGroup.next())
-                .bind())
+                .connect(address))
                 .syncUninterruptibly()
                 .channel();
     }

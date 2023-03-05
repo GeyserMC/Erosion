@@ -11,7 +11,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class GeyserboundPickBlockPacket implements GeyserboundPacket {
+public final class GeyserboundPickBlockPacket implements GeyserboundPacket {
     private final @Nullable CompoundTag tag;
 
     public GeyserboundPickBlockPacket(ByteBuf buf) {
