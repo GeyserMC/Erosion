@@ -13,10 +13,25 @@ dependencies {
     compileOnly("com.viaversion", "viaversion", "4.5.0")
 }
 
+relocate("it.unimi.dsi.fastutil")
+relocate("net.fabricmc") // Provided by ReflectionRemapper
+relocate("org.yaml")
+relocate("xyz.jpenilla")
+
 application {
     mainClass.set("org.geysermc.erosion.bukkit.BukkitPlugin")
 }
 
 tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
     archiveBaseName.set("Erosion")
+
+    dependencies {
+        exclude(dependency("io.netty:.*"))
+        // From ConfigUtils
+        exclude(dependency("org.checkerframework:checker-qual:.*"))
+        exclude(dependency("com.google.code.findbugs:jsr305:.*"))
+        exclude(dependency("com.google.errorprone:javac:.*"))
+        exclude(dependency("com.github.spotbugs:spotbugs-annotations:.*"))
+        exclude(dependency("org.jetbrains:annotations:.*"))
+    }
 }
