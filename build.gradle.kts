@@ -3,8 +3,15 @@ plugins {
     id("erosion.build-logic")
 }
 
-group = "org.geysermc.erosion"
-version = "1.0-SNAPSHOT"
+allprojects {
+    group = "org.geysermc.erosion"
+    version = "1.0-SNAPSHOT"
+    description = "Offloads Geyser work to backend servers to save on memory consumption."
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+}
 
 val platforms = setOf(
         projects.bukkitPlugin

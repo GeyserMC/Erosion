@@ -1,17 +1,5 @@
 plugins {
-    id("maven-publish")
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            groupId = "org.geysermc.erosion" //project.group as String
-            artifactId = "bukkit-common" //project.name
-            version = "1.0-SNAPSHOT" //project.version as String
-
-            from(components["java"])
-        }
-    }
+    id("erosion.publish-conventions")
 }
 
 dependencies {
