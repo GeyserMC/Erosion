@@ -1,3 +1,7 @@
+plugins {
+    id("erosion.publish-conventions")
+}
+
 dependencies {
     api(projects.pluginCore)
     api(projects.bukkitCommon)

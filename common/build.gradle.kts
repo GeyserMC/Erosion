@@ -1,5 +1,6 @@
 plugins {
     id("maven-publish")
+    id("erosion.publish-conventions")
 }
 
 publishing {
