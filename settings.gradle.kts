@@ -25,6 +25,9 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
     }
+    plugins {
+        id("net.kyori.indra")
+    }
     includeBuild("build-logic")
 }
 
