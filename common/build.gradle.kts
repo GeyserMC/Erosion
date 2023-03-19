@@ -11,6 +11,7 @@ dependencies {
     // TODO use release.
     api("com.github.steveice10", "opennbt", "1.5-SNAPSHOT")
     api("com.nukkitx", "math", "1.1.1")
+    api("com.nukkitx", "nbt", "2.2.1")
 
     api("com.nukkitx.fastutil", "fastutil-int-object-maps", "8.5.3")
     api("com.nukkitx.fastutil", "fastutil-object-int-maps", "8.5.3")
