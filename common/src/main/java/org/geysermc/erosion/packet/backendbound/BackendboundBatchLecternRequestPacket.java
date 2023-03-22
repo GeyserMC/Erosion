@@ -52,4 +52,16 @@ public final class BackendboundBatchLecternRequestPacket implements Backendbound
     public void handle(BackendboundPacketHandler packetHandler) {
         packetHandler.handleBatchLecternRequest(this);
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getZ() {
+        return z;
+    }
+
+    public List<Vector3i> getBlockEntityInfos() {
+        return blockEntityInfos;
+    }
 }

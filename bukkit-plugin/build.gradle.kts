@@ -10,7 +10,7 @@ dependencies {
 
     implementation("org.geysermc.geyser.adapters", "spigot-all", "1.6-SNAPSHOT")
 
-    compileOnly("com.viaversion", "viaversion", "4.5.0")
+    compileOnly("com.viaversion", "viaversion", "4.6.0")
 }
 
 relocate("it.unimi.dsi.fastutil")

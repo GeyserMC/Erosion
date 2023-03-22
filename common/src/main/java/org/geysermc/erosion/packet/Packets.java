@@ -5,10 +5,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import org.geysermc.erosion.packet.backendbound.BackendboundBatchBlockRequestPacket;
-import org.geysermc.erosion.packet.backendbound.BackendboundBlockRequestPacket;
-import org.geysermc.erosion.packet.backendbound.BackendboundInitializePacket;
-import org.geysermc.erosion.packet.backendbound.BackendboundPickBlockPacket;
+import org.geysermc.erosion.packet.backendbound.*;
 import org.geysermc.erosion.packet.geyserbound.*;
 
 import java.io.IOException;
@@ -30,6 +27,7 @@ public final class Packets {
         registerSending(GeyserboundHandshakePacket.class, id++);
         registerSending(GeyserboundBatchBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockDataPacket.class, id++);
+        registerSending(GeyserboundBlockEntityPacket.class, id++);
         registerSending(GeyserboundBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockLookupFailPacket.class, id++);
         registerSending(GeyserboundBlockPlacePacket.class, id++);
@@ -38,7 +36,9 @@ public final class Packets {
 
         registerReceiving(BackendboundInitializePacket::new);
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
+        registerReceiving(BackendboundBatchLecternRequestPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
+        registerReceiving(BackendboundLecternRequestPacket::new);
         registerReceiving(BackendboundPickBlockPacket::new);
 
         INITIALIZED = true;
@@ -52,12 +52,15 @@ public final class Packets {
         int id = 0;
         registerSending(BackendboundInitializePacket.class, id++);
         registerSending(BackendboundBatchBlockRequestPacket.class, id++);
+        registerSending(BackendboundBatchLecternRequestPacket.class, id++);
         registerSending(BackendboundBlockRequestPacket.class, id++);
+        registerSending(BackendboundLecternRequestPacket.class, id++);
         registerSending(BackendboundPickBlockPacket.class, id++);
 
         registerReceiving(GeyserboundHandshakePacket::new);
         registerReceiving(GeyserboundBatchBlockIdPacket::new);
         registerReceiving(GeyserboundBlockDataPacket::new);
+        registerReceiving(GeyserboundBlockEntityPacket::new);
         registerReceiving(GeyserboundBlockIdPacket::new);
         registerReceiving(GeyserboundBlockLookupFailPacket::new);
         registerReceiving(GeyserboundBlockPlacePacket::new);
@@ -80,7 +83,7 @@ public final class Packets {
         if (id >= RECEIVING.size()) {
             throw new RuntimeException("ID " + id + " does not exist");
         }
-        Function<ByteBuf, ? extends ErosionPacket<?>> constructor = RECEIVING.get(id); // TODO add bounds check
+        Function<ByteBuf, ? extends ErosionPacket<?>> constructor = RECEIVING.get(id);
         ErosionPacket<?> packet = constructor.apply(in);
         if (in.isReadable()) {
             StringBuilder builder = new StringBuilder("There are leftover bytes to read after reading " + packet.getClass());

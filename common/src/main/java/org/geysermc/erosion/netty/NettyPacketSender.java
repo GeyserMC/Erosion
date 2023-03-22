@@ -13,6 +13,16 @@ public final class NettyPacketSender<T extends ErosionPacket<?>> implements Eros
     }
 
     @Override
+    public void sendPacketWithoutFlush(T packet) {
+        this.channel.write(packet);
+    }
+
+    @Override
+    public void flush() {
+        this.channel.flush();
+    }
+
+    @Override
     public void setChannel(Channel channel) {
         this.channel = channel;
     }

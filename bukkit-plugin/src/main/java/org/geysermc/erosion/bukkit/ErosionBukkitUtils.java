@@ -22,7 +22,7 @@ public final class ErosionBukkitUtils {
                 return new PreFlatteningWorldAccessor();
             }
             List<ProtocolPathEntry> path = Via.getManager().getProtocolManager()
-                    .getProtocolPath(ProtocolVersion.v1_19_3.getVersion(),
+                    .getProtocolPath(ProtocolVersion.v1_19_4.getVersion(),
                             serverVersion.getVersion());
             if (path != null) {
                 List<MappingData> data = path.stream()

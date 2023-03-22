@@ -2,11 +2,15 @@ package org.geysermc.erosion.bukkit;
 
 import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.nbt.NbtMap;
 import io.netty.channel.Channel;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.geysermc.erosion.bukkit.world.WorldAccessor;
@@ -15,11 +19,13 @@ import org.geysermc.erosion.packet.backendbound.*;
 import org.geysermc.erosion.packet.geyserbound.*;
 import org.geysermc.erosion.util.BlockPositionIterator;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 public final class BukkitPacketHandler implements BackendboundPacketHandler {
     private final Plugin plugin;
     private final WorldAccessor worldAccessor;
+    private final BukkitLecterns lecterns;
     private final ErosionPacketSender<GeyserboundPacket> packetSender;
     private Player player;
 
@@ -32,6 +38,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
         this.plugin = plugin;
         this.worldAccessor = worldAccessor;
         this.packetSender = packetSender;
+        this.lecterns = new BukkitLecterns(plugin);
     }
 
     @Override
@@ -63,6 +70,29 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     }
 
     @Override
+    public void handleBatchLecternRequest(BackendboundBatchLecternRequestPacket packet) {
+        Bukkit.getScheduler().runTask(this.plugin, () -> {
+            int x = packet.getX();
+            int z = packet.getZ();
+            World world = this.player.getWorld();
+            if (!world.isChunkLoaded(x, z)) {
+                return;
+            }
+            Chunk chunk = world.getChunkAt(x, z);
+            List<Vector3i> blockEntityInfos = packet.getBlockEntityInfos();
+            for (int i = 0; i < blockEntityInfos.size(); i++) {
+                Vector3i info = blockEntityInfos.get(i);
+                Block block = chunk.getBlock(info.getX(), info.getY(), info.getZ());
+                NbtMap blockEntityData = this.lecterns.getLecternData(block, true);
+                if (blockEntityData != null) {
+                    this.packetSender.sendPacketWithoutFlush(new GeyserboundBlockEntityPacket(blockEntityData));
+                }
+            }
+            this.packetSender.flush();
+        });
+    }
+
+    @Override
     public void handleBlockRequest(BackendboundBlockRequestPacket packet) {
         try {
             Vector3i pos = packet.getPos();
@@ -72,6 +102,18 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
             e.printStackTrace();
             sendPacket(new GeyserboundBlockLookupFailPacket());
         }
+    }
+
+    @Override
+    public void handleLecternRequest(BackendboundLecternRequestPacket packet) {
+        Bukkit.getScheduler().runTask(this.plugin, () -> {
+            final Vector3i pos = packet.getPos();
+            final Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+            final NbtMap blockEntityData = this.lecterns.getLecternData(block, false);
+            if (blockEntityData != null) {
+                sendPacket(new GeyserboundBlockEntityPacket(blockEntityData));
+            }
+        });
     }
 
     @Override

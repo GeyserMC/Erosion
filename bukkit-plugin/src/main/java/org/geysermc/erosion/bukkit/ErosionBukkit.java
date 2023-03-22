@@ -21,6 +21,10 @@ public final class ErosionBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (Bukkit.getPluginManager().getPlugin("Geyser-Spigot") != null) {
+            throw new IllegalStateException("Erosion is completely unnecessary on a server with Geyser installed!");
+        }
+
         ErosionConfig config = ErosionConfig.load(getDataFolder().toPath());
         WorldAccessor worldAccessor = ErosionBukkitUtils.determineWorldAccessor();
         getLogger().info("World accessor type: " + worldAccessor.getLoggedName());

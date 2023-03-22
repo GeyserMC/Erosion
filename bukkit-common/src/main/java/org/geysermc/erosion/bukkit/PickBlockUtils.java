@@ -14,7 +14,7 @@ public final class PickBlockUtils {
 
     public static CompoundTag pickBlock(Player player, int x, int y, int z) {
         Block block = player.getWorld().getBlockAt(x, y, z);
-        BlockState state = block.getState();
+        BlockState state = BukkitUtils.getBlockState(block);
         if (state instanceof Banner) {
             Banner banner = (Banner) state;
             ListTag list = new ListTag("Patterns");
