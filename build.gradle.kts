@@ -24,25 +24,6 @@ subprojects {
         plugin("erosion.build-logic")
     }
 
-    tasks {
-        processResources {
-            // Spigot, Sponge, Fabric
-            filesMatching(listOf("plugin.yml", "META-INF/sponge_plugins.json", "fabric.mod.json")) {
-                expand(
-                        "id" to "erosion",
-                        "name" to "Erosion",
-                        "version" to project.version,
-                        "description" to project.description,
-                        "url" to "https://geysermc.org",
-                        "author" to "GeyserMC"
-                )
-            }
-        }
-        compileJava {
-            options.encoding = Charsets.UTF_8.name()
-        }
-    }
-
     when (this) {
         in platforms -> plugins.apply("erosion.shadow-conventions")
     }

@@ -1,24 +1,24 @@
 plugins {
     `java-library`
-    id("net.kyori.indra")
+    //id("net.kyori.indra")
 }
 
 dependencies {
     compileOnly("org.checkerframework", "checker-qual", "3.19.0")
 }
 
-indra {
-    github("GeyserMC", "Erosion") {
-        ci(true)
-        issues(true)
-        scm(true)
-    }
-    mitLicense()
-
-    javaVersions {
-        target(8)
-    }
-}
+//indra {
+//    github("GeyserMC", "Erosion") {
+//        ci(true)
+//        issues(true)
+//        scm(true)
+//    }
+//    mitLicense()
+//
+//    javaVersions {
+//        target(8)
+//    }
+//}
 
 tasks {
     processResources {
