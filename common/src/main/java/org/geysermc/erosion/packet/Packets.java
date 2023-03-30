@@ -35,10 +35,10 @@ public final class Packets {
         registerSending(GeyserboundPistonEventPacket.class, id++);
 
         registerReceiving(BackendboundInitializePacket::new);
+        registerReceiving(BackendboundBatchBlockEntityPacket::new);
         registerReceiving(BackendboundBatchBlockRequestPacket::new);
-        registerReceiving(BackendboundBatchLecternRequestPacket::new);
+        registerReceiving(BackendboundBlockEntityPacket::new);
         registerReceiving(BackendboundBlockRequestPacket::new);
-        registerReceiving(BackendboundLecternRequestPacket::new);
         registerReceiving(BackendboundPickBlockPacket::new);
 
         INITIALIZED = true;
@@ -51,10 +51,10 @@ public final class Packets {
 
         int id = 0;
         registerSending(BackendboundInitializePacket.class, id++);
+        registerSending(BackendboundBatchBlockEntityPacket.class, id++);
         registerSending(BackendboundBatchBlockRequestPacket.class, id++);
-        registerSending(BackendboundBatchLecternRequestPacket.class, id++);
+        registerSending(BackendboundBlockEntityPacket.class, id++);
         registerSending(BackendboundBlockRequestPacket.class, id++);
-        registerSending(BackendboundLecternRequestPacket.class, id++);
         registerSending(BackendboundPickBlockPacket.class, id++);
 
         registerReceiving(GeyserboundHandshakePacket::new);

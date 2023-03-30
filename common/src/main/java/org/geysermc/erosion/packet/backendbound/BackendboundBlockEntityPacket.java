@@ -4,14 +4,14 @@ import com.nukkitx.math.vector.Vector3i;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.ProtocolUtils;
 
-public final class BackendboundLecternRequestPacket implements BackendboundPacket {
+public final class BackendboundBlockEntityPacket implements BackendboundPacket {
     private final Vector3i pos;
 
-    public BackendboundLecternRequestPacket(ByteBuf buf) {
+    public BackendboundBlockEntityPacket(ByteBuf buf) {
         this.pos = ProtocolUtils.readBlockPos(buf);
     }
 
-    public BackendboundLecternRequestPacket(Vector3i pos) {
+    public BackendboundBlockEntityPacket(Vector3i pos) {
         this.pos = pos;
     }
 
@@ -22,7 +22,7 @@ public final class BackendboundLecternRequestPacket implements BackendboundPacke
 
     @Override
     public void handle(BackendboundPacketHandler packetHandler) {
-        packetHandler.handleLecternRequest(this);
+        packetHandler.handleBlockEntity(this);
     }
 
     public Vector3i getPos() {

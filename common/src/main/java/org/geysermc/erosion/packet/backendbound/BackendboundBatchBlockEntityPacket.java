@@ -1,13 +1,14 @@
 package org.geysermc.erosion.packet.backendbound;
 
 import com.nukkitx.math.vector.Vector3i;
+import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.Iterator;
 import java.util.List;
 
-public final class BackendboundBatchLecternRequestPacket implements BackendboundPacket {
+public final class BackendboundBatchBlockEntityPacket implements BackendboundPacket {
     private final int x;
     private final int z;
     /**
@@ -15,9 +16,9 @@ public final class BackendboundBatchLecternRequestPacket implements Backendbound
      */
     private final List<Vector3i> blockEntityInfos;
 
-    public BackendboundBatchLecternRequestPacket(ByteBuf buf) {
-        this.x = buf.readInt();
-        this.z = buf.readInt();
+    public BackendboundBatchBlockEntityPacket(ByteBuf buf) {
+        this.x = VarInts.readInt(buf);
+        this.z = VarInts.readInt(buf);
         this.blockEntityInfos = new ObjectArrayList<>();
         // One entry at least is guaranteed
         boolean next;
@@ -30,7 +31,7 @@ public final class BackendboundBatchLecternRequestPacket implements Backendbound
         } while (next);
     }
 
-    public BackendboundBatchLecternRequestPacket(int x, int z, List<Vector3i> blockEntityInfos) {
+    public BackendboundBatchBlockEntityPacket(int x, int z, List<Vector3i> blockEntityInfos) {
         this.x = x;
         this.z = z;
         this.blockEntityInfos = blockEntityInfos;
@@ -38,8 +39,8 @@ public final class BackendboundBatchLecternRequestPacket implements Backendbound
 
     @Override
     public void serialize(ByteBuf buf) {
-        buf.writeInt(this.x);
-        buf.writeInt(this.z);
+        VarInts.writeInt(buf, this.x);
+        VarInts.writeInt(buf, this.z);
         Iterator<Vector3i> it = blockEntityInfos.iterator();
         while (it.hasNext()) {
             Vector3i blockEntityInfo = it.next();
@@ -50,7 +51,7 @@ public final class BackendboundBatchLecternRequestPacket implements Backendbound
 
     @Override
     public void handle(BackendboundPacketHandler packetHandler) {
-        packetHandler.handleBatchLecternRequest(this);
+        packetHandler.handleBatchBlockEntity(this);
     }
 
     public int getX() {

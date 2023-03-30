@@ -4,9 +4,6 @@ import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import com.nukkitx.math.vector.Vector3i;
 import com.nukkitx.nbt.NbtMap;
 import io.netty.channel.Channel;
-import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -20,7 +17,6 @@ import org.geysermc.erosion.packet.geyserbound.*;
 import org.geysermc.erosion.util.BlockPositionIterator;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public final class BukkitPacketHandler implements BackendboundPacketHandler {
     private final Plugin plugin;
@@ -43,7 +39,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     @Override
     public void handleInitialization(BackendboundInitializePacket packet) {
-        if (player != null) {
+        if (player == null) {
             player = Bukkit.getPlayer(packet.getUuid());
             if (player == null) {
                 this.plugin.getLogger().warning("Player with UUID " + packet.getUuid() + " not found.");
@@ -70,7 +66,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     }
 
     @Override
-    public void handleBatchLecternRequest(BackendboundBatchLecternRequestPacket packet) {
+    public void handleBatchBlockEntity(BackendboundBatchBlockEntityPacket packet) {
         Bukkit.getScheduler().runTask(this.plugin, () -> {
             int x = packet.getX();
             int z = packet.getZ();
@@ -105,7 +101,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     }
 
     @Override
-    public void handleLecternRequest(BackendboundLecternRequestPacket packet) {
+    public void handleBlockEntity(BackendboundBlockEntityPacket packet) {
         Bukkit.getScheduler().runTask(this.plugin, () -> {
             final Vector3i pos = packet.getPos();
             final Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
