@@ -4,24 +4,32 @@ import com.nukkitx.network.VarInts;
 import io.netty.buffer.ByteBuf;
 
 public final class GeyserboundBlockIdPacket implements GeyserboundPacket {
+    private final int transactionId;
     private final int blockId;
 
-    public GeyserboundBlockIdPacket(int blockId) {
+    public GeyserboundBlockIdPacket(int transactionId, int blockId) {
+        this.transactionId = transactionId;
         this.blockId = blockId;
     }
 
     public GeyserboundBlockIdPacket(ByteBuf buf) {
+        this.transactionId = VarInts.readUnsignedInt(buf);
         this.blockId = VarInts.readUnsignedInt(buf);
     }
 
     @Override
     public void serialize(ByteBuf buf) {
+        VarInts.writeUnsignedInt(buf, this.transactionId);
         VarInts.writeUnsignedInt(buf, this.blockId);
     }
 
     @Override
     public void handle(GeyserboundPacketHandler packetHandler) {
         packetHandler.handleBlockId(this);
+    }
+
+    public int getTransactionId() {
+        return transactionId;
     }
 
     public int getBlockId() {

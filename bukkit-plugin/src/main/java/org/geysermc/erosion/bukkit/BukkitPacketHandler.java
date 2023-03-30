@@ -61,7 +61,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
             sendPacket(new GeyserboundBatchBlockIdPacket(blocks));
         } catch (Throwable e) {
             e.printStackTrace();
-            sendPacket(new GeyserboundBlockLookupFailPacket());
+            sendPacket(new GeyserboundBlockLookupFailPacket(0));
         }
     }
 
@@ -93,10 +93,10 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
         try {
             Vector3i pos = packet.getPos();
             int networkId = worldAccessor.getBlockAt(player, pos.getX(), pos.getY(), pos.getZ());
-            sendPacket(new GeyserboundBlockIdPacket(networkId));
+            sendPacket(new GeyserboundBlockIdPacket(packet.getTransactionId(), networkId));
         } catch (Throwable e) {
             e.printStackTrace();
-            sendPacket(new GeyserboundBlockLookupFailPacket());
+            sendPacket(new GeyserboundBlockLookupFailPacket(packet.getTransactionId() + 1));
         }
     }
 

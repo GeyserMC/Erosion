@@ -26,7 +26,6 @@ public final class Packets {
         int id = 0;
         registerSending(GeyserboundHandshakePacket.class, id++);
         registerSending(GeyserboundBatchBlockIdPacket.class, id++);
-        registerSending(GeyserboundBlockDataPacket.class, id++);
         registerSending(GeyserboundBlockEntityPacket.class, id++);
         registerSending(GeyserboundBlockIdPacket.class, id++);
         registerSending(GeyserboundBlockLookupFailPacket.class, id++);
@@ -59,7 +58,6 @@ public final class Packets {
 
         registerReceiving(GeyserboundHandshakePacket::new);
         registerReceiving(GeyserboundBatchBlockIdPacket::new);
-        registerReceiving(GeyserboundBlockDataPacket::new);
         registerReceiving(GeyserboundBlockEntityPacket::new);
         registerReceiving(GeyserboundBlockIdPacket::new);
         registerReceiving(GeyserboundBlockLookupFailPacket::new);
