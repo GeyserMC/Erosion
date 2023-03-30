@@ -6,6 +6,7 @@ import com.nukkitx.nbt.NbtMap;
 import io.netty.channel.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -67,25 +68,45 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     @Override
     public void handleBatchBlockEntity(BackendboundBatchBlockEntityPacket packet) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
-            int x = packet.getX();
-            int z = packet.getZ();
-            World world = this.player.getWorld();
-            if (!world.isChunkLoaded(x, z)) {
+        if (SchedulerUtils.FOLIA) {
+            Chunk chunk = getChunk(packet.getX(), packet.getZ());
+            if (chunk == null) {
                 return;
             }
-            Chunk chunk = world.getChunkAt(x, z);
-            List<Vector3i> blockEntityInfos = packet.getBlockEntityInfos();
-            for (int i = 0; i < blockEntityInfos.size(); i++) {
-                Vector3i info = blockEntityInfos.get(i);
-                Block block = chunk.getBlock(info.getX(), info.getY(), info.getZ());
-                NbtMap blockEntityData = this.lecterns.getLecternData(block, true);
-                if (blockEntityData != null) {
-                    this.packetSender.sendPacketWithoutFlush(new GeyserboundBlockEntityPacket(blockEntityData));
+            Bukkit.getRegionScheduler().execute(this.plugin, chunk.getWorld(), chunk.getX(), chunk.getZ(), () -> {
+                List<Vector3i> blockEntityInfos = packet.getBlockEntityInfos();
+                sendLecterns(chunk, blockEntityInfos);
+            });
+        } else {
+            Bukkit.getScheduler().runTask(this.plugin, () -> {
+                Chunk chunk = getChunk(packet.getX(), packet.getZ());
+                if (chunk == null) {
+                    return;
                 }
+                List<Vector3i> blockEntityInfos = packet.getBlockEntityInfos();
+                sendLecterns(chunk, blockEntityInfos);
+            });
+        }
+    }
+
+    private Chunk getChunk(int x, int z) {
+        World world = this.player.getWorld();
+        if (!world.isChunkLoaded(x, z)) {
+            return null;
+        }
+        return world.getChunkAt(x, z);
+    }
+
+    private void sendLecterns(Chunk chunk, List<Vector3i> blockEntityInfos) {
+        for (int i = 0; i < blockEntityInfos.size(); i++) {
+            Vector3i info = blockEntityInfos.get(i);
+            Block block = chunk.getBlock(info.getX(), info.getY(), info.getZ());
+            NbtMap blockEntityData = this.lecterns.getLecternData(block, true);
+            if (blockEntityData != null) {
+                this.packetSender.sendPacketWithoutFlush(new GeyserboundBlockEntityPacket(blockEntityData));
             }
-            this.packetSender.flush();
-        });
+        }
+        this.packetSender.flush();
     }
 
     @Override
@@ -102,23 +123,24 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     @Override
     public void handleBlockEntity(BackendboundBlockEntityPacket packet) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
-            final Vector3i pos = packet.getPos();
-            final Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+        final Vector3i pos = packet.getPos();
+        final Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+        SchedulerUtils.runTask(this.plugin, () -> {
             final NbtMap blockEntityData = this.lecterns.getLecternData(block, false);
             if (blockEntityData != null) {
                 sendPacket(new GeyserboundBlockEntityPacket(blockEntityData));
             }
-        });
+        }, block);
     }
 
     @Override
     public void handlePickBlock(BackendboundPickBlockPacket packet) {
-        Bukkit.getScheduler().runTask(this.plugin, () -> {
-            Vector3i pos = packet.getPos();
-            CompoundTag tag = PickBlockUtils.pickBlock(this.player, pos.getX(), pos.getY(), pos.getZ());
+        Vector3i pos = packet.getPos();
+        Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+        SchedulerUtils.runTask(this.plugin, () -> {
+            CompoundTag tag = PickBlockUtils.pickBlock(block);
             sendPacket(new GeyserboundPickBlockPacket(tag));
-        });
+        }, block);
     }
 
     @Override

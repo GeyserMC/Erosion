@@ -12,8 +12,7 @@ import org.geysermc.erosion.util.BannerUtils;
 
 public final class PickBlockUtils {
 
-    public static CompoundTag pickBlock(Player player, int x, int y, int z) {
-        Block block = player.getWorld().getBlockAt(x, y, z);
+    public static CompoundTag pickBlock(Block block) {
         BlockState state = BukkitUtils.getBlockState(block);
         if (state instanceof Banner) {
             Banner banner = (Banner) state;
