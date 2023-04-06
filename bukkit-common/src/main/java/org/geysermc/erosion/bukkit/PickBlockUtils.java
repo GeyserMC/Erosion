@@ -7,7 +7,6 @@ import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.entity.Player;
 import org.geysermc.erosion.util.BannerUtils;
 
 public final class PickBlockUtils {

@@ -1,6 +1,6 @@
 package org.geysermc.erosion.netty;
 
-import com.nukkitx.network.VarInts;
+import org.cloudburstmc.protocol.common.util.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;

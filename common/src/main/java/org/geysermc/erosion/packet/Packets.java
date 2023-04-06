@@ -1,6 +1,6 @@
 package org.geysermc.erosion.packet;
 
-import com.nukkitx.network.VarInts;
+import org.cloudburstmc.protocol.common.util.VarInts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;

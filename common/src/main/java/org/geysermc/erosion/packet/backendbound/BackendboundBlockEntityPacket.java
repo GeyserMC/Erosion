@@ -1,6 +1,6 @@
 package org.geysermc.erosion.packet.backendbound;
 
-import com.nukkitx.math.vector.Vector3i;
+import org.cloudburstmc.math.vector.Vector3i;
 import io.netty.buffer.ByteBuf;
 import org.geysermc.erosion.packet.ProtocolUtils;
 

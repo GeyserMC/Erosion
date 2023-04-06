@@ -1,7 +1,7 @@
 package org.geysermc.erosion.packet.backendbound;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.network.VarInts;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.common.util.VarInts;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 

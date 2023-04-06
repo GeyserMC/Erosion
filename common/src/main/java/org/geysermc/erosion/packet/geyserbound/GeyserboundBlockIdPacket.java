@@ -1,6 +1,6 @@
 package org.geysermc.erosion.packet.geyserbound;
 
-import com.nukkitx.network.VarInts;
+import org.cloudburstmc.protocol.common.util.VarInts;
 import io.netty.buffer.ByteBuf;
 
 public final class GeyserboundBlockIdPacket implements GeyserboundPacket {

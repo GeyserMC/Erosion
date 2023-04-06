@@ -1,7 +1,7 @@
 package org.geysermc.erosion.packet;
 
-import com.nukkitx.math.vector.Vector3i;
-import com.nukkitx.network.VarInts;
+import org.cloudburstmc.math.vector.Vector3i;
+import org.cloudburstmc.protocol.common.util.VarInts;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.StandardCharsets;

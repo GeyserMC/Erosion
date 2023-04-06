@@ -1,8 +1,8 @@
 package org.geysermc.erosion.util;
 
-import com.nukkitx.network.VarInts;
-import com.nukkitx.network.util.Preconditions;
 import io.netty.buffer.ByteBuf;
+import org.cloudburstmc.protocol.common.util.Preconditions;
+import org.cloudburstmc.protocol.common.util.VarInts;
 
 public final class BlockPositionIterator {
     private final int minX;
