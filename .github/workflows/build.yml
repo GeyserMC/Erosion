@@ -44,7 +44,7 @@ jobs:
           echo "$DOWNLOADS_PRIVATE_KEY" > id_ecdsa
           chmod 600 id_ecdsa
           # Set the project
-          project=geyser
+          project=erosion
           # Get the version from gradle.properties
           version=$(cat gradle.properties | grep -o "version=[0-9\\.]*" | cut -d"=" -f2)
           # Create the build folder
