@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class PreFlatteningWorldAccessor implements WorldAccessor {
+    public static final PreFlatteningWorldAccessor INSTANCE = new PreFlatteningWorldAccessor();
+
     private final MappingData flattenMappings;
     private final List<MappingData> mappingData;
 

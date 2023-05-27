@@ -10,7 +10,7 @@ dependencies {
     api("org.cloudburstmc.protocol", "common", "3.0.0.Beta1-SNAPSHOT")
     // TODO use release.
     api("com.github.steveice10", "opennbt", "1.5-SNAPSHOT")
-    api("org.cloudburstmc.math", "immutable", "2.0-SNAPSHOT")
+    api("org.cloudburstmc.math", "immutable", "2.0")
     api("org.cloudburstmc", "nbt", "3.0.0.Final")
 
     api("com.nukkitx.fastutil", "fastutil-int-object-maps", "8.5.3")

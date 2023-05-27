@@ -17,11 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class ErosionPistonListener extends PistonListener {
-    private final WorldAccessor worldAccessor;
-
-    public ErosionPistonListener(WorldAccessor worldAccessor) {
-        this.worldAccessor = worldAccessor;
-    }
 
     @Override
     protected void onPistonAction0(BlockPistonEvent event) {
@@ -45,19 +40,21 @@ public final class ErosionPistonListener extends PistonListener {
                 continue;
             }
 
+            final BukkitPacketHandler handler = entry.getValue();
+
             if (!blocksFilled) {
                 List<Block> blocks = isExtend ? ((BlockPistonExtendEvent) event).getBlocks() : ((BlockPistonRetractEvent) event).getBlocks();
                 for (Block block : blocks) {
                     Location attachedLocation = block.getLocation();
-                    int blockId = worldAccessor.getBlockAt(player, attachedLocation);
+                    int blockId = handler.getWorldAccessor().getBlockAt(player, attachedLocation);
                     // TODO if we include mappings in Erosion, filter out blocks that will be destroyed
                     attachedBlocks.put(BukkitUtils.getVector(attachedLocation), blockId);
                 }
                 blocksFilled = true;
             }
-            int pistonBlockId = worldAccessor.getBlockAt(player, location);
+            int pistonBlockId = handler.getWorldAccessor().getBlockAt(player, location);
 
-            entry.getValue().sendPacket(new GeyserboundPistonEventPacket(pistonBlockId, BukkitUtils.getVector(location),
+            handler.sendPacket(new GeyserboundPistonEventPacket(pistonBlockId, BukkitUtils.getVector(location),
                     isExtend, event.isSticky(), attachedBlocks));
         }
     }

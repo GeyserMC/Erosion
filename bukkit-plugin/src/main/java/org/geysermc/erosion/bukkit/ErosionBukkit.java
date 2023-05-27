@@ -26,25 +26,24 @@ public final class ErosionBukkit extends JavaPlugin {
         }
 
         ErosionConfig config = ErosionConfig.load(getDataFolder().toPath());
-        WorldAccessor worldAccessor = ErosionBukkitUtils.determineWorldAccessor();
-        getLogger().info("World accessor type: " + worldAccessor.getLoggedName());
+        getLogger().info("Base world accessor type: " + ErosionBukkitUtils.BASE_ACCESSOR.getLoggedName());
         Packets.initBackend();
 
         PayloadInterceptor interceptor;
         if (config.isUnixDomainEnabled()) {
             listener = new UnixSocketServerListener();
-            listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(this, worldAccessor, new NettyPacketSender<>()));
+            listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(this, new NettyPacketSender<>()));
             interceptor = null;
         } else {
             interceptor = new CustomPayloadInterceptor(player ->
-                    new BukkitPacketHandler(this, worldAccessor, new PluginMessageSender(this, player), player));
+                    new BukkitPacketHandler(this, new PluginMessageSender(this, player), player));
         }
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, Constants.PLUGIN_MESSAGE);
         Bukkit.getPluginManager().registerEvents(new PluginMessageHandler(interceptor, this), this);
 
-        Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(worldAccessor), this);
-        Bukkit.getPluginManager().registerEvents(new ErosionPistonListener(worldAccessor), this);
+        Bukkit.getPluginManager().registerEvents(new BlockPlaceListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ErosionPistonListener(), this);
     }
 
     @Override

@@ -20,19 +20,18 @@ import java.util.List;
 
 public final class BukkitPacketHandler implements BackendboundPacketHandler {
     private final Plugin plugin;
-    private final WorldAccessor worldAccessor;
     private final BukkitLecterns lecterns;
     private final ErosionPacketSender<GeyserboundPacket> packetSender;
+    private WorldAccessor worldAccessor;
     private Player player;
 
-    public BukkitPacketHandler(Plugin plugin, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender, Player player) {
-        this(plugin, worldAccessor, packetSender);
+    public BukkitPacketHandler(Plugin plugin, ErosionPacketSender<GeyserboundPacket> packetSender, Player player) {
+        this(plugin, packetSender);
         this.player = player;
     }
 
-    public BukkitPacketHandler(Plugin plugin, WorldAccessor worldAccessor, ErosionPacketSender<GeyserboundPacket> packetSender) {
+    public BukkitPacketHandler(Plugin plugin, ErosionPacketSender<GeyserboundPacket> packetSender) {
         this.plugin = plugin;
-        this.worldAccessor = worldAccessor;
         this.packetSender = packetSender;
         this.lecterns = new BukkitLecterns(plugin);
     }
@@ -47,6 +46,7 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
             }
             ErosionBukkit.ACTIVE_PLAYERS.put(player, this);
         }
+        this.worldAccessor = ErosionBukkitUtils.determinePlayerWorldAccessor(packet.getJavaProtocolVersion());
     }
 
     @Override
@@ -67,6 +67,9 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     @Override
     public void handleBatchBlockEntity(BackendboundBatchBlockEntityPacket packet) {
+        if (BukkitUtils.invalidChunkDistance(this.player, packet.getX(), packet.getZ())) {
+            return;
+        }
         if (SchedulerUtils.FOLIA) {
             Chunk chunk = getChunk(packet.getX(), packet.getZ());
             if (chunk == null) {
@@ -112,6 +115,10 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     public void handleBlockRequest(BackendboundBlockRequestPacket packet) {
         try {
             Vector3i pos = packet.getPos();
+            if (BukkitUtils.invalidDistance(this.player, pos)) {
+                sendPacket(new GeyserboundBlockLookupFailPacket(packet.getTransactionId() + 1));
+                return;
+            }
             int networkId = worldAccessor.getBlockAt(player, pos.getX(), pos.getY(), pos.getZ());
             sendPacket(new GeyserboundBlockIdPacket(packet.getTransactionId(), networkId));
         } catch (Throwable e) {
@@ -123,6 +130,9 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
     @Override
     public void handleBlockEntity(BackendboundBlockEntityPacket packet) {
         final Vector3i pos = packet.getPos();
+        if (BukkitUtils.invalidDistance(this.player, pos)) {
+            return;
+        }
         final Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
         SchedulerUtils.runTask(this.plugin, () -> {
             final NbtMap blockEntityData = this.lecterns.getLecternData(block, false);
@@ -134,8 +144,11 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     @Override
     public void handlePickBlock(BackendboundPickBlockPacket packet) {
-        Vector3i pos = packet.getPos();
-        Block block = player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+        final Vector3i pos = packet.getPos();
+        if (BukkitUtils.invalidDistance(this.player, pos)) {
+            return;
+        }
+        final Block block = this.player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
         SchedulerUtils.runTask(this.plugin, () -> {
             CompoundTag tag = PickBlockUtils.pickBlock(block);
             sendPacket(new GeyserboundPickBlockPacket(tag));
@@ -149,6 +162,10 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
 
     public void sendPacket(GeyserboundPacket packet) {
         this.packetSender.sendPacket(packet);
+    }
+
+    public WorldAccessor getWorldAccessor() {
+        return worldAccessor;
     }
 
     @Override

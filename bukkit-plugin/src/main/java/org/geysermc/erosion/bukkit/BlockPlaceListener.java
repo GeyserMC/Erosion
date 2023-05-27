@@ -10,11 +10,6 @@ import org.geysermc.erosion.bukkit.world.WorldAccessor;
 import org.geysermc.erosion.packet.geyserbound.GeyserboundBlockPlacePacket;
 
 public final class BlockPlaceListener implements Listener {
-    private final WorldAccessor worldAccessor;
-
-    public BlockPlaceListener(WorldAccessor worldAccessor) {
-        this.worldAccessor = worldAccessor;
-    }
 
     @EventHandler
     public void onBlockPlace(final BlockPlaceEvent event) {
@@ -24,7 +19,7 @@ public final class BlockPlaceListener implements Listener {
             return;
         }
         Location location = event.getBlockPlaced().getLocation();
-        int networkId = worldAccessor.getBlockAt(player, location);
+        int networkId = handler.getWorldAccessor().getBlockAt(player, location);
         handler.sendPacket(new GeyserboundBlockPlacePacket(BukkitUtils.getVector(location), networkId));
     }
 }

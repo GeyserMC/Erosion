@@ -14,28 +14,28 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class ErosionBukkitUtils {
+    public static final WorldAccessor BASE_ACCESSOR = determineBaseWorldAccessor();
 
-    public static WorldAccessor determineWorldAccessor() {
+    public static WorldAccessor determinePlayerWorldAccessor(int protocolVersion) {
         if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null) {
             ProtocolVersion serverVersion = reasonablyGuessServerVersion();
             if (serverVersion.getVersion() < ProtocolVersion.v1_13.getVersion()) {
-                return new PreFlatteningWorldAccessor();
+                return PreFlatteningWorldAccessor.INSTANCE;
             }
             List<ProtocolPathEntry> path = Via.getManager().getProtocolManager()
-                    .getProtocolPath(ProtocolVersion.v1_19_4.getVersion(),
-                            serverVersion.getVersion());
+                    .getProtocolPath(protocolVersion, serverVersion.getVersion());
             if (path != null) {
                 List<MappingData> data = path.stream()
                         .map(entry -> entry.protocol().getMappingData())
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
                 if (!data.isEmpty()) {
-                    return new ViaVersionWorldAccessor(determineBaseWorldAccessor(), data);
+                    return new ViaVersionWorldAccessor(BASE_ACCESSOR, data);
                 }
             }
         }
 
-        return determineBaseWorldAccessor();
+        return BASE_ACCESSOR;
     }
 
     private static WorldAccessor determineBaseWorldAccessor() {
