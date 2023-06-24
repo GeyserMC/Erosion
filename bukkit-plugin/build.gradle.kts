@@ -8,7 +8,7 @@ dependencies {
     }
     implementation("xyz.jpenilla", "reflection-remapper", "0.1.0-SNAPSHOT")
 
-    implementation("org.geysermc.geyser.adapters", "spigot-all", "1.6-SNAPSHOT")
+    implementation("org.geysermc.geyser.adapters", "spigot-all", "1.9-SNAPSHOT", classifier="all")
 
     compileOnly("com.viaversion", "viaversion", "4.6.0")
 }
