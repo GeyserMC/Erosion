@@ -10,11 +10,11 @@ import java.nio.file.Path;
 public final class ErosionConfig {
     private static ErosionConfig INSTANCE;
 
-    private boolean unixDomainEnabled = false;
+    private boolean unixSocketEnabled = false;
     private String unixDomainAddress = "/tmp/erosion.sock";
 
-    public boolean isUnixDomainEnabled() {
-        return unixDomainEnabled;
+    public boolean isUnixSocketEnabled() {
+        return unixSocketEnabled;
     }
 
     public String getUnixDomainAddress() {

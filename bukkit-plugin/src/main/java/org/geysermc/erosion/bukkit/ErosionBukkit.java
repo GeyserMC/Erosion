@@ -6,7 +6,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.erosion.Constants;
 import org.geysermc.erosion.ErosionConfig;
 import org.geysermc.erosion.bukkit.pluginmessage.PluginMessageSender;
-import org.geysermc.erosion.bukkit.world.WorldAccessor;
 import org.geysermc.erosion.netty.NettyPacketSender;
 import org.geysermc.erosion.netty.impl.UnixSocketServerListener;
 import org.geysermc.erosion.packet.Packets;
@@ -30,7 +29,7 @@ public final class ErosionBukkit extends JavaPlugin {
         Packets.initBackend();
 
         PayloadInterceptor interceptor;
-        if (config.isUnixDomainEnabled()) {
+        if (config.isUnixSocketEnabled()) {
             listener = new UnixSocketServerListener();
             listener.createServer(config.getUnixDomainAddress(), () -> new BukkitPacketHandler(this, new NettyPacketSender<>()));
             interceptor = null;

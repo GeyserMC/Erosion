@@ -57,16 +57,22 @@ public final class CustomPayloadInterceptor extends ChannelInboundHandlerAdapter
 
     private static Class<?> findCustomPayloadClass() {
         try {
-            return Class.forName("net.minecraft.network.protocol.game.PacketPlayInCustomPayload");
+            return Class.forName("net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket");
         } catch (ClassNotFoundException e) {
             try {
-                // We're using pre-1.17
-                String prefix = BukkitUtils.getLegacyNmsPackage();
-                return Class.forName(prefix + ".PacketPlayInCustomPayload");
+                // We're using pre-1.20.2
+                return Class.forName("net.minecraft.network.protocol.game.PacketPlayInCustomPayload");
             } catch (ClassNotFoundException e2) {
-                RuntimeException runtimeException = new RuntimeException(e2);
-                runtimeException.addSuppressed(e);
-                throw runtimeException;
+                try {
+                    // We're using pre-1.17
+                    String prefix = BukkitUtils.getLegacyNmsPackage();
+                    return Class.forName(prefix + ".PacketPlayInCustomPayload");
+                } catch (ClassNotFoundException e3) {
+                    RuntimeException runtimeException = new RuntimeException(e3);
+                    runtimeException.addSuppressed(e2);
+                    runtimeException.addSuppressed(e);
+                    throw runtimeException;
+                }
             }
         }
     }

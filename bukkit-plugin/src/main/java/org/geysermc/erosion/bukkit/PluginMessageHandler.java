@@ -28,7 +28,7 @@ public final class PluginMessageHandler implements Listener {
     public void onPluginMessageRegister(final PlayerRegisterChannelEvent event) {
         if (Constants.PLUGIN_MESSAGE.equals(event.getChannel())) {
             Player player = event.getPlayer();
-            GeyserboundHandshakePacket packet = new GeyserboundHandshakePacket(ErosionConfig.getInstance().isUnixDomainEnabled() ?
+            GeyserboundHandshakePacket packet = new GeyserboundHandshakePacket(ErosionConfig.getInstance().isUnixSocketEnabled() ?
                     ErosionConfig.getInstance().getUnixDomainAddress() : null);
             ByteBuf buf = Unpooled.buffer();
             try {
