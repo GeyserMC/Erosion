@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "org.geysermc.erosion"
-    version = "1.0-SNAPSHOT"
+    version = "1.1-SNAPSHOT"
     description = "Offloads Geyser work to backend servers to save on memory consumption."
 
     tasks.withType<JavaCompile> {
