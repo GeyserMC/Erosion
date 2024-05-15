@@ -1,37 +1,38 @@
 package org.geysermc.erosion.packet.geyserbound;
 
-import com.github.steveice10.opennbt.NBTIO;
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import io.netty.buffer.ByteBufUtil;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.cloudburstmc.protocol.common.util.VarInts;
 
 public final class GeyserboundPickBlockPacket implements GeyserboundPacket {
-    private final @Nullable CompoundTag tag;
+    private final Int2ObjectMap<byte[]> components;
 
     public GeyserboundPickBlockPacket(ByteBuf buf) {
-        try {
-            this.tag = (CompoundTag) NBTIO.readTag((DataInput) new ByteBufInputStream(buf));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        int size = VarInts.readUnsignedInt(buf);
+        this.components = new Int2ObjectOpenHashMap<>(size);
+        for (int i = 0; i < size; i++) {
+            int id = VarInts.readUnsignedInt(buf);
+            int bufSize = VarInts.readUnsignedInt(buf);
+            byte[] bytes = ByteBufUtil.getBytes(buf, buf.readerIndex(), bufSize);
+            buf.readerIndex(buf.readerIndex() + bufSize);
+            this.components.put(id, bytes);
         }
     }
 
-    public GeyserboundPickBlockPacket(@Nullable CompoundTag tag) {
-        this.tag = tag;
+    public GeyserboundPickBlockPacket(Int2ObjectMap<byte[]> components) {
+        this.components = components;
     }
 
     @Override
     public void serialize(ByteBuf buf) {
-        try {
-            NBTIO.writeTag((DataOutput) new ByteBufOutputStream(buf), this.tag);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        VarInts.writeUnsignedInt(buf, this.components.size());
+        for (Int2ObjectMap.Entry<byte[]> entry : this.components.int2ObjectEntrySet()) {
+            VarInts.writeUnsignedInt(buf, entry.getIntKey());
+            byte[] bytes = entry.getValue();
+            VarInts.writeUnsignedInt(buf, bytes.length);
+            buf.writeBytes(bytes);
         }
     }
 
@@ -40,8 +41,7 @@ public final class GeyserboundPickBlockPacket implements GeyserboundPacket {
         packetHandler.handlePickBlock(this);
     }
 
-    @Nullable
-    public CompoundTag getTag() {
-        return tag;
+    public Int2ObjectMap<byte[]> getComponents() {
+        return components;
     }
 }

@@ -1,6 +1,6 @@
 package org.geysermc.erosion.bukkit;
 
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.nbt.NbtMap;
 import io.netty.channel.Channel;
@@ -150,8 +150,8 @@ public final class BukkitPacketHandler implements BackendboundPacketHandler {
         }
         final Block block = this.player.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
         SchedulerUtils.runTask(this.plugin, () -> {
-            CompoundTag tag = PickBlockUtils.pickBlock(block);
-            sendPacket(new GeyserboundPickBlockPacket(tag));
+            Int2ObjectMap<byte[]> components = PickBlockUtils.pickBlock(block);
+            sendPacket(new GeyserboundPickBlockPacket(components));
         }, block);
     }
 

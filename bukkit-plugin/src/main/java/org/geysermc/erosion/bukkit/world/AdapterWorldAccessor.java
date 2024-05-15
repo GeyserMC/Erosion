@@ -1,12 +1,13 @@
 package org.geysermc.erosion.bukkit.world;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.geysermc.geyser.adapters.spigot.SpigotWorldAdapter;
+import org.geysermc.geyser.adapters.WorldAdapter;
 
 public final class AdapterWorldAccessor implements WorldAccessor {
-    private final SpigotWorldAdapter adapter;
+    private final WorldAdapter<World> adapter;
 
-    public AdapterWorldAccessor(SpigotWorldAdapter adapter) {
+    public AdapterWorldAccessor(WorldAdapter<World> adapter) {
         this.adapter = adapter;
     }
 

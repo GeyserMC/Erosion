@@ -29,14 +29,13 @@ public final class BukkitLecterns {
         int y = block.getY();
         int z = block.getZ();
         BlockState state = BukkitUtils.getBlockState(block);
-        if (!(state instanceof Lectern)) {
+        if (!(state instanceof Lectern lectern)) {
             this.plugin.getLogger().warning("Lectern expected at: " + Vector3i.from(x, y, z).toString() + " but was not! " + block.toString());
             return null;
         }
-        Lectern lectern = (Lectern) state;
 
         ItemStack itemStack = lectern.getInventory().getItem(0);
-        if (itemStack == null || !(itemStack.getItemMeta() instanceof BookMeta)) {
+        if (itemStack == null || !(itemStack.getItemMeta() instanceof BookMeta bookMeta)) {
             if (!isChunkLoad) {
                 // We need to update the lectern since it's not going to be updated otherwise
                 return LecternUtils.getBaseLecternTag(x, y, z, 0).build();
@@ -44,7 +43,6 @@ public final class BukkitLecterns {
             // We don't care; return
             return null;
         }
-        BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
 
         // On the count: allow the book to show/open even there are no pages. We know there is a book here, after all, and this matches Java behavior
         boolean hasBookPages = bookMeta.getPageCount() > 0;

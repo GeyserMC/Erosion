@@ -1,37 +1,38 @@
 package org.geysermc.erosion.bukkit;
 
-import com.github.steveice10.opennbt.tag.builtin.CompoundTag;
-import com.github.steveice10.opennbt.tag.builtin.ListTag;
-import com.github.steveice10.opennbt.tag.builtin.Tag;
-import org.bukkit.block.Banner;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.banner.Pattern;
-import org.geysermc.erosion.util.BannerUtils;
+import org.geysermc.erosion.util.ReflectionUtils;
 
 public final class PickBlockUtils {
+    private static final PickItemProvider PROVIDER;
 
-    public static CompoundTag pickBlock(Block block) {
-        BlockState state = BukkitUtils.getBlockState(block);
-        if (state instanceof Banner) {
-            Banner banner = (Banner) state;
-            ListTag list = new ListTag("Patterns");
-            for (int i = 0; i < banner.numberOfPatterns(); i++) {
-                Pattern pattern = banner.getPattern(i);
-                list.add(BannerUtils.getJavaPatternTag(pattern.getPattern().getIdentifier(), pattern.getColor().ordinal()));
+    static {
+        PickItemProvider provider;
+        if (Bukkit.getPluginManager().getPlugin("ViaVersion") != null) {
+            provider = new ViaPickItemProvider();
+        } else {
+            provider = null;
+            // Make sure we're in an environment with NMS mapping
+            if (ReflectionUtils.getClassSilently("net.minecraft.server.level.ServerPlayer") != null) {
+                try {
+                    Class<?> nms = Class.forName("org.geysermc.erosion.bukkit.nms.NmsPickItemProvider");
+                    provider = (PickItemProvider) nms.getConstructor().newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-
-            return addToBlockEntityTag(list);
         }
-        return null;
+        PROVIDER = provider;
     }
 
-    private static CompoundTag addToBlockEntityTag(Tag tag) {
-        CompoundTag compoundTag = new CompoundTag("");
-        CompoundTag blockEntityTag = new CompoundTag("BlockEntityTag");
-        blockEntityTag.put(tag);
-        compoundTag.put(blockEntityTag);
-        return compoundTag;
+    public static Int2ObjectMap<byte[]> pickBlock(Block block) {
+        if (PROVIDER == null) {
+            return Int2ObjectMaps.emptyMap();
+        }
+        return PROVIDER.getPickItem(block);
     }
 
     private PickBlockUtils() {

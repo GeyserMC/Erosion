@@ -8,8 +8,6 @@ dependencies {
     api("io.netty", "netty-transport-native-epoll", "4.1.43.Final")
     // TODO just needed for VarInt encoding. Might be wholly unnecessary.
     api("org.cloudburstmc.protocol", "common", "3.0.0.Beta1-SNAPSHOT")
-    // TODO use release.
-    api("com.github.steveice10", "opennbt", "1.5-SNAPSHOT")
     api("org.cloudburstmc.math", "immutable", "2.0")
     api("org.cloudburstmc", "nbt", "3.0.0.Final")
 
@@ -19,8 +17,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     withSourcesJar()
 }

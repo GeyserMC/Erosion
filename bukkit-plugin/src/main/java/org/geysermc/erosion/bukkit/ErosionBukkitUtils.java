@@ -1,17 +1,17 @@
 package org.geysermc.erosion.bukkit;
 
+import com.google.common.base.Predicates;
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.data.MappingData;
 import com.viaversion.viaversion.api.protocol.ProtocolPathEntry;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import org.bukkit.Bukkit;
 import org.geysermc.erosion.bukkit.world.*;
+import org.geysermc.geyser.adapters.paper.PaperAdapters;
 import org.geysermc.geyser.adapters.spigot.SpigotAdapters;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public final class ErosionBukkitUtils {
     public static final WorldAccessor BASE_ACCESSOR = determineBaseWorldAccessor();
@@ -27,8 +27,8 @@ public final class ErosionBukkitUtils {
             if (path != null) {
                 List<MappingData> data = path.stream()
                         .map(entry -> entry.protocol().getMappingData())
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
+                        .filter(Predicates.notNull())
+                        .toList();
                 if (!data.isEmpty()) {
                     return new ViaVersionWorldAccessor(BASE_ACCESSOR, data);
                 }
@@ -39,17 +39,24 @@ public final class ErosionBukkitUtils {
     }
 
     private static WorldAccessor determineBaseWorldAccessor() {
-        String name = Bukkit.getServer().getClass().getPackage().getName();
-        String nmsVersion = name.substring(name.lastIndexOf('.') + 1);
         WorldAccessor worldAccessor;
         try {
-            SpigotAdapters.registerWorldAdapter(nmsVersion);
-            worldAccessor = new AdapterWorldAccessor(SpigotAdapters.getWorldAdapter());
-        } catch (Exception e) {
+            //noinspection deprecation
+            int protocolVersion = Bukkit.getUnsafe().getProtocolVersion();
+            PaperAdapters.registerClosestWorldAdapter(protocolVersion);
+            worldAccessor = new AdapterWorldAccessor(PaperAdapters.getWorldAdapter());
+        } catch (NoSuchMethodError | Exception notPaper) {
+            String name = Bukkit.getServer().getClass().getPackage().getName();
+            String nmsVersion = name.substring(name.lastIndexOf('.') + 1);
             try {
-                worldAccessor = new PaperReflectionWorldAccessor();
-            } catch (IllegalStateException mappingsNotFound) {
-                worldAccessor = new ReflectionWorldAccessor();
+                SpigotAdapters.registerWorldAdapter(nmsVersion);
+                worldAccessor = new AdapterWorldAccessor(SpigotAdapters.getWorldAdapter());
+            } catch (Exception e) {
+                try {
+                    worldAccessor = new PaperReflectionWorldAccessor();
+                } catch (IllegalStateException mappingsNotFound) {
+                    worldAccessor = new ReflectionWorldAccessor();
+                }
             }
         }
         return worldAccessor;
