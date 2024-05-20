@@ -79,6 +79,25 @@ public final class BlockPositionIterator {
         return maxI;
     }
 
+    /**
+     * Get the index of a position
+     *
+     * @return the index, or -1 if out of bounds
+     */
+    public int getIndex(int x, int y, int z) {
+        int offsetX = x - minX;
+        int offsetY = y - minY;
+        int offsetZ = z - minZ;
+
+        if (y >= minY && offsetY < maxI / (sizeX * sizeZ)
+                && x >= minX && offsetX < sizeX
+                && z >= minZ && offsetZ < sizeZ) {
+            return offsetZ + (offsetX * sizeZ) + (offsetY * sizeX * sizeZ);
+        }
+
+        return -1;
+    }
+
     public void serialize(ByteBuf buf) {
         VarInts.writeInt(buf, this.minX);
         VarInts.writeInt(buf, this.minY);
