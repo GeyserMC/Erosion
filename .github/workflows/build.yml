@@ -58,6 +58,7 @@ jobs:
           host: ${{ secrets.DOWNLOADS_SERVER_IP }}
           files: |
             bukkit-plugin/build/libs/Erosion.jar
+          changelog: ${{ steps.metadata.outputs.body }}
 
       - name: Notify Discord
         if: ${{ (success() || failure()) && github.repository == 'GeyserMC/Erosion' }}
