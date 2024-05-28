@@ -29,14 +29,14 @@ jobs:
           ORG_GRADLE_PROJECT_geysermcPassword: ${{ secrets.DEPLOY_PASS }}
 
       - name: Get Version
-        if: ${{ success() && github.repository == 'GeyserMC/Erosion' && github.ref_name == 'master' }}
+        if: ${{ (success() || failure()) && github.repository == 'GeyserMC/Erosion' }}
         id: get-version
         run: |
           version=$(cat gradle.properties | grep -o "version=[0-9\\.]*" | cut -d"=" -f2)
           echo "VERSION=${version}" >> $GITHUB_OUTPUT
 
       - name: Get Release Metadata
-        if: ${{ success() && github.repository == 'GeyserMC/Erosion' && github.ref_name == 'master' }}
+        if: ${{ (success() || failure()) && github.repository == 'GeyserMC/Erosion' }}
         uses: GeyserMC/actions/release@master
         id: metadata
         with:
